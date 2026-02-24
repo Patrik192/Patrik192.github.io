@@ -427,6 +427,161 @@ margin: 20px 0 15px;
 width: auto;
 min-width: 200px;
 }
+
+/* Стили для сравнения с шаблонами */
+.template-select {
+width: 100%;
+padding: 12px;
+font-size: 15px;
+border: 2px solid #ddd;
+border-radius: 8px;
+outline: none;
+background: #f9f9f9;
+}
+.template-select:focus {
+border-color: #667eea;
+background: white;
+}
+.template-description {
+background: #e3f2fd;
+border-left: 4px solid #2196F3;
+padding: 15px;
+border-radius: 8px;
+margin: 15px 0;
+font-size: 14px;
+}
+.progress-bar-container {
+width: 100%;
+height: 30px;
+background-color: #f0f0f0;
+border-radius: 15px;
+margin: 15px 0;
+overflow: hidden;
+box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+.progress-bar {
+height: 100%;
+background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+color: white;
+text-align: center;
+line-height: 30px;
+font-weight: bold;
+transition: width 0.5s ease;
+border-radius: 15px;
+}
+.stats-text {
+text-align: center;
+font-size: 16px;
+margin: 10px 0 20px;
+font-weight: 600;
+color: #0e585c;
+}
+.comparison-details {
+max-height: 400px;
+overflow-y: auto;
+padding: 5px;
+}
+.match-item {
+padding: 15px;
+margin: 10px 0;
+background: #d4edda;
+border-left: 4px solid #28a745;
+border-radius: 8px;
+font-size: 14px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.mismatch-item {
+padding: 15px;
+margin: 10px 0;
+background: #fff3cd;
+border-left: 4px solid #ffc107;
+border-radius: 8px;
+font-size: 14px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.field-name {
+font-weight: 700;
+color: #333;
+margin-bottom: 5px;
+font-size: 15px;
+}
+.field-values {
+display: flex;
+flex-direction: column;
+gap: 5px;
+}
+.patient-value {
+color: #0e585c;
+padding: 3px 0;
+}
+.template-value {
+color: #856404;
+padding: 3px 0;
+}
+.separator {
+border-top: 1px dashed #ccc;
+margin: 10px 0;
+}
+.match-badge {
+display: inline-block;
+padding: 3px 10px;
+border-radius: 20px;
+font-size: 12px;
+font-weight: 600;
+margin-left: 10px;
+}
+.match-badge.success {
+background: #28a745;
+color: white;
+}
+.match-badge.warning {
+background: #ffc107;
+color: #333;
+}
+
+/* Стили для посимвольного сравнения */
+.char-comparison {
+font-family: 'Courier New', monospace;
+background: #f8f9fa;
+padding: 10px;
+border-radius: 6px;
+margin-top: 8px;
+font-size: 13px;
+}
+.char-match {
+color: #28a745;
+font-weight: bold;
+}
+.char-mismatch {
+color: #dc3545;
+font-weight: bold;
+text-decoration: underline;
+}
+.char-missing {
+color: #ffc107;
+font-style: italic;
+}
+.stats-highlight {
+font-size: 18px;
+font-weight: bold;
+padding: 5px 10px;
+border-radius: 20px;
+}
+.total-stats {
+background: #0e585c;
+color: white;
+padding: 15px;
+border-radius: 10px;
+text-align: center;
+margin: 15px 0;
+font-size: 16px;
+}
+.total-stats span {
+font-size: 24px;
+font-weight: bold;
+margin: 0 10px;
+}
+
 @media (max-width: 1200px) {
 .timer-container {
 right: 15px;
@@ -528,7 +683,7 @@ padding: 10px 15px;
 </div>
 <div class="form-group" style="margin-bottom: 25px;">
 <label for="operator-group" class="required">№ группы</label>
-<input type="text" id="operator-group" placeholder="201" style="font-size: 16px; padding: 14px;">
+<input type="text" id="operator-group" placeholder="301" style="font-size: 16px; padding: 14px;">
 </div>
 <button class="btn btn-enter" id="operator-enter-btn">
 <span>✅</span> Ввод
@@ -768,6 +923,7 @@ ID пациента: <span id="patient-id">PAT-2026-0001</span>
 <option value="psychiatrist">Психиатр</option>
 <option value="cardiologist">Кардиолог</option>
 <option value="nurse">Медсестра</option>
+<option value="pediatrician">Педиатр</option>
 </select>
 </div>
 </div>
@@ -795,7 +951,829 @@ ID пациента: <span id="patient-id">PAT-2026-0001</span>
 </button>
 </div>
 </div>
+
 <script>
+// Встроенные шаблоны для сравнения с полным набором полей
+const BUILT_IN_TEMPLATES = [
+  {
+    id: 1,
+    name: "Вариант 01",
+    description: "Шаблон для обычного терапевтического приема",
+    fields: {
+      lastName: "Иванов",
+      firstName: "Иван",
+      middleName: "Иванович",
+      birthDate: "1985-05-15",
+      gender: "male",
+      phone: "+7 (999) 123-45-67",
+      email: "ivanov@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Ленина, д. 10, кв. 5",
+      passportSeries: "4012",
+      passportNumber: "345678",
+      passportIssueDate: "2010-06-20",
+      passportIssuedBy: "ОВД Центрального района Санкт-Петербурга",
+      insuranceNumber: "123-456-789 00",
+      policyNumber: "1234567890123456",
+      bloodType: "2+",
+      allergies: "пенициллин",
+      medications: "Эналаприл 5 мг утром",
+      visitType: "primary",
+      department: "therapy",
+      complaints: "Головная боль, слабость, повышение температуры до 37,5",
+      anamnesis: "Болеет 3 дня, лечился самостоятельно парацетамолом",
+      objectiveStatus: "АД 130/80, пульс 72, температура 37,2",
+      doctorName: "Петрова Анна Сергеевна",
+      doctorPosition: "therapist"
+    }
+  },
+  {
+    id: 2,
+    name: "Вариант 02",
+    description: "Шаблон для пациентов с сердечно-сосудистыми заболеваниями",
+    fields: {
+      lastName: "Петров",
+      firstName: "Пётр",
+      middleName: "Петрович",
+      birthDate: "1960-10-10",
+      gender: "male",
+      phone: "+7 (921) 555-66-77",
+      email: "petrov@mcb.ru",
+      address: "г. Санкт-Петербург, пр. Науки, д. 25, кв. 12",
+      passportSeries: "4015",
+      passportNumber: "987654",
+      passportIssueDate: "2005-03-15",
+      passportIssuedBy: "ОВД Калининского района Санкт-Петербурга",
+      insuranceNumber: "987-654-321 00",
+      policyNumber: "9876543210987654",
+      bloodType: "1+",
+      allergies: "Нет",
+      medications: "Конкор 5 мг, Аспикард 100 мг",
+      visitType: "followup",
+      department: "cardiology",
+      complaints: "Боли в области сердца, одышка при нагрузке",
+      anamnesis: "ИБС в течение 5 лет, ухудшение за последнюю неделю",
+      objectiveStatus: "АД 145/90, пульс 84, отеки голеней",
+      doctorName: "Сидоров Иван Петрович",
+      doctorPosition: "cardiologist"
+    }
+  },
+  {
+    id: 3,
+    name: "Вариант 03",
+    description: "Шаблон для детского приема",
+    fields: {
+      lastName: "Смирнова",
+      firstName: "Анна",
+      middleName: "Ивановна",
+      birthDate: "2008-07-20",
+      gender: "female",
+      phone: "+7 (911) 222-33-44",
+      email: "smirnovaai@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Садовая, д. 5, кв. 8",
+      passportSeries: "0144",
+      passportNumber: "452301",
+      passportIssueDate: "2022-07-25",
+      passportIssuedBy: "ОВД Красносельского района Санкт-Петербурга",
+      insuranceNumber: "456-789-123 00",
+      policyNumber: "4567891230456789",
+      bloodType: "1-",
+      allergies: "пенициллин",
+      medications: "нет",
+      visitType: "primary",
+      department: "pediatrics",
+      complaints: "Кашель, насморк, температура 37,5",
+      anamnesis: "Заболела 2 дня назад, контакт с больными",
+      objectiveStatus: "Зев гиперемирован, хрипов нет, температура 37.3",
+      doctorName: "Козлова Елена Викторовна",
+      doctorPosition: "pediatrician"
+    }
+  },
+  {
+    id: 4,
+    name: "Вариант 04",
+    description: "Шаблон для пациентов с неврологическими жалобами",
+    fields: {
+      lastName: "Николаев",
+      firstName: "Николай",
+      middleName: "Николаевич",
+      birthDate: "1975-03-30",
+      gender: "male",
+      phone: "+7 (931) 777-88-99",
+      email: "nikolaev@mcb.ru",
+      address: "г. Санкт-Петербург, Московский пр., д. 100, кв. 45",
+      passportSeries: "4018",
+      passportNumber: "543210",
+      passportIssueDate: "2008-09-10",
+      passportIssuedBy: "ОВД Московского района Санкт-Петербурга",
+      insuranceNumber: "789-123-456 00",
+      policyNumber: "7891234560789123",
+      bloodType: "3+",
+      allergies: "нет",
+      medications: "Финлепсин 200 мг",
+      visitType: "planned",
+      department: "neurology",
+      complaints: "Головные боли, головокружение, нарушение сна",
+      anamnesis: "Симптомы появились после стрессовой ситуации месяц назад",
+      objectiveStatus: "В сознании, координация нормальная, рефлексы живые",
+      doctorName: "Иванова Мария Сергеевна",
+      doctorPosition: "neurologist"
+    }
+  },
+  {
+    id: 5,
+    name: "Вариант 05",
+    description: "Шаблон для предоперационного осмотра",
+    fields: {
+      lastName: "Сидоров",
+      firstName: "Алексей",
+      middleName: "Алексеевич",
+      birthDate: "1980-12-15",
+      gender: "male",
+      phone: "+7 (981) 444-55-66",
+      email: "sidorov@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Рубинштейна, д. 15, кв. 3",
+      passportSeries: "4021",
+      passportNumber: "135790",
+      passportIssueDate: "2012-04-25",
+      passportIssuedBy: "ОВД Адмиралтейского района Санкт-Петербурга",
+      insuranceNumber: "321-654-987 00",
+      policyNumber: "3216549870321654",
+      bloodType: "2-",
+      allergies: "Новокаин",
+      medications: "Нет",
+      visitType: "planned",
+      department: "surgery",
+      complaints: "Плановое удаление паховой грыжи",
+      anamnesis: "Грыжа в течение 2 лет, беспокоит при физической нагрузке",
+      objectiveStatus: "Послеоперационный рубец в правой подвздошной области",
+      doctorName: "Михайлов Пётр Сергеевич",
+      doctorPosition: "surgeon"
+    }
+  },
+    {
+    id: 6,
+    name: "Вариант 06",
+    description: "Шаблон для пациентов с гипертонической болезнью",
+    fields: {
+      lastName: "Смирнов",
+      firstName: "Алексей",
+      middleName: "Иванович",
+      birthDate: "1970-05-20",
+      gender: "male",
+      phone: "+7 (911) 222-33-44",
+      email: "smirnov@mcb.ru",
+      address: "г. Санкт-Петербург, пр. Науки, д. 15, кв. 34",
+      passportSeries: "4013",
+      passportNumber: "456789",
+      passportIssueDate: "2008-07-15",
+      passportIssuedBy: "ОВД Калининского района Санкт-Петербурга",
+      insuranceNumber: "456-789-123 11",
+      policyNumber: "4567891230456789",
+      bloodType: "2+",
+      allergies: "Нет",
+      medications: "Эналаприл 10 мг, Индапамид",
+      visitType: "followup",
+      department: "therapy",
+      complaints: "Головные боли, повышение АД до 160/100",
+      anamnesis: "Гипертония в течение 5 лет, регулярно принимает препараты",
+      objectiveStatus: "АД 145/90, пульс 78, тоны сердца ясные",
+      doctorName: "Васильева Елена Петровна",
+      doctorPosition: "therapist"
+    }
+  },
+  {
+    id: 7,
+    name: "Вариант 07",
+    description: "Шаблон для пациентов с варикозной болезнью",
+    fields: {
+      lastName: "Козлов",
+      firstName: "Дмитрий",
+      middleName: "Сергеевич",
+      birthDate: "1982-11-12",
+      gender: "male",
+      phone: "+7 (921) 333-44-55",
+      email: "kozlov@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Савушкина, д. 45, кв. 12",
+      passportSeries: "4016",
+      passportNumber: "654321",
+      passportIssueDate: "2010-03-22",
+      passportIssuedBy: "ОВД Приморского района Санкт-Петербурга",
+      insuranceNumber: "654-321-987 22",
+      policyNumber: "6543219870654321",
+      bloodType: "1-",
+      allergies: "Новокаин",
+      medications: "Детралекс",
+      visitType: "planned",
+      department: "surgery",
+      complaints: "Расширение вен на ногах, отеки к вечеру",
+      anamnesis: "Симптомы усилились за последний год",
+      objectiveStatus: "Варикозное расширение вен обеих голеней, отечность стоп",
+      doctorName: "Соколов Андрей Петрович",
+      doctorPosition: "surgeon"
+    }
+  },
+  {
+    id: 8,
+    name: "Вариант 08",
+    description: "Шаблон для пациентов с остеохондрозом",
+    fields: {
+      lastName: "Новикова",
+      firstName: "Татьяна",
+      middleName: "Викторовна",
+      birthDate: "1975-08-25",
+      gender: "female",
+      phone: "+7 (931) 444-55-66",
+      email: "novikova@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Дыбенко, д. 23, кв. 56",
+      passportSeries: "4019",
+      passportNumber: "789123",
+      passportIssueDate: "2009-11-05",
+      passportIssuedBy: "ОВД Невского района Санкт-Петербурга",
+      insuranceNumber: "789-123-456 33",
+      policyNumber: "7891234560789123",
+      bloodType: "3+",
+      allergies: "Нет",
+      medications: "Мидокалм, Нейромультивит",
+      visitType: "primary",
+      department: "neurology",
+      complaints: "Боли в пояснице, иррадиирующие в ногу",
+      anamnesis: "Обострение после поднятия тяжести",
+      objectiveStatus: "Симптом Ласега положительный справа, ограничение движений",
+      doctorName: "Фёдорова Ирина Александровна",
+      doctorPosition: "neurologist"
+    }
+  },
+  {
+    id: 9,
+    name: "Вариант 09",
+    description: "Шаблон для пациентов с депрессивным эпизодом",
+    fields: {
+      lastName: "Морозов",
+      firstName: "Игорь",
+      middleName: "Павлович",
+      birthDate: "1988-02-18",
+      gender: "male",
+      phone: "+7 (981) 555-66-77",
+      email: "morozov@mcb.ru",
+      address: "г. Санкт-Петербург, пр. Большевиков, д. 32, кв. 78",
+      passportSeries: "4022",
+      passportNumber: "321654",
+      passportIssueDate: "2012-09-30",
+      passportIssuedBy: "ОВД Невского района Санкт-Петербурга",
+      insuranceNumber: "321-654-987 44",
+      policyNumber: "3216549870321654",
+      bloodType: "2-",
+      allergies: "Нет",
+      medications: "Сертралин 50 мг",
+      visitType: "followup",
+      department: "psychiatry",
+      complaints: "Подавленное настроение, тревога, нарушение сна",
+      anamnesis: "Состояние ухудшилось после стресса на работе",
+      objectiveStatus: "Сознание ясное, критика сохранена, суицидальных мыслей нет",
+      doctorName: "Лебедев Константин Михайлович",
+      doctorPosition: "psychiatrist"
+    }
+  },
+  {
+    id: 10,
+    name: "Вариант 10",
+    description: "Шаблон для пациентов с ишемической болезнью сердца",
+    fields: {
+      lastName: "Волкова",
+      firstName: "Надежда",
+      middleName: "Сергеевна",
+      birthDate: "1962-07-03",
+      gender: "female",
+      phone: "+7 (911) 666-77-88",
+      email: "volkova@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Ленина, д. 56, кв. 23",
+      passportSeries: "4025",
+      passportNumber: "987456",
+      passportIssueDate: "2005-12-12",
+      passportIssuedBy: "ОВД Центрального района Санкт-Петербурга",
+      insuranceNumber: "987-456-123 55",
+      policyNumber: "9874561230987456",
+      bloodType: "4+",
+      allergies: "Пенициллин",
+      medications: "Кардиомагнил, Аторвастатин",
+      visitType: "planned",
+      department: "cardiology",
+      complaints: "Давящие боли за грудиной при ходьбе",
+      anamnesis: "ИБС в течение 3 лет, стенокардия напряжения",
+      objectiveStatus: "АД 130/80, пульс 72, ЭКГ без острой патологии",
+      doctorName: "Михайлов Алексей Викторович",
+      doctorPosition: "cardiologist"
+    }
+  },
+  {
+    id: 11,
+    name: "Вариант 11",
+    description: "Шаблон для предпроцедурного осмотра медсестрой",
+    fields: {
+      lastName: "Андреева",
+      firstName: "Екатерина",
+      middleName: "Дмитриевна",
+      birthDate: "1995-09-14",
+      gender: "female",
+      phone: "+7 (921) 777-88-99",
+      email: "andreeva@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Рубинштейна, д. 12, кв. 45",
+      passportSeries: "4028",
+      passportNumber: "159753",
+      passportIssueDate: "2015-06-18",
+      passportIssuedBy: "ОВД Адмиралтейского района Санкт-Петербурга",
+      insuranceNumber: "159-753-486 66",
+      policyNumber: "1597534860159753",
+      bloodType: "1+",
+      allergies: "Йод",
+      medications: "",
+      visitType: "primary",
+      department: "therapy",
+      complaints: "Измерение АД, забор анализов",
+      anamnesis: "Профилактический осмотр",
+      objectiveStatus: "АД 120/80, пульс 68, температура 36.6",
+      doctorName: "Смирнова Анна Ивановна",
+      doctorPosition: "nurse"
+    }
+  },
+  {
+    id: 12,
+    name: "Вариант 12",
+    description: "Шаблон для пациентов с ОРВИ",
+    fields: {
+      lastName: "Зайцев",
+      firstName: "Павел",
+      middleName: "Андреевич",
+      birthDate: "1991-12-01",
+      gender: "male",
+      phone: "+7 (931) 888-99-00",
+      email: "zaitsev@mcb.ru",
+      address: "г. Санкт-Петербург, пр. Просвещения, д. 67, кв. 34",
+      passportSeries: "4031",
+      passportNumber: "753951",
+      passportIssueDate: "2013-10-25",
+      passportIssuedBy: "ОВД Выборгского района Санкт-Петербурга",
+      insuranceNumber: "753-951-456 77",
+      policyNumber: "7539514560753951",
+      bloodType: "3-",
+      allergies: "Нет",
+      medications: "Ингавирин, Парацетамол",
+      visitType: "primary",
+      department: "therapy",
+      complaints: "Насморк, кашель, температура 37.8",
+      anamnesis: "Заболел 2 дня назад",
+      objectiveStatus: "Температура 37.6, зев гиперемирован, хрипов нет",
+      doctorName: "Кузнецова Ольга Сергеевна",
+      doctorPosition: "therapist"
+    }
+  },
+  {
+    id: 13,
+    name: "Вариант 13",
+    description: "Шаблон для послеоперационного наблюдения",
+    fields: {
+      lastName: "Павлов",
+      firstName: "Михаил",
+      middleName: "Игоревич",
+      birthDate: "1978-04-05",
+      gender: "male",
+      phone: "+7 (911) 999-00-11",
+      email: "pavlov@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Софийская, д. 89, кв. 67",
+      passportSeries: "4034",
+      passportNumber: "852456",
+      passportIssueDate: "2007-08-08",
+      passportIssuedBy: "ОВД Фрунзенского района Санкт-Петербурга",
+      insuranceNumber: "852-456-789 88",
+      policyNumber: "8524567890852456",
+      bloodType: "2+",
+      allergies: "Нет",
+      medications: "Кеторол, Цефтриаксон",
+      visitType: "followup",
+      department: "surgery",
+      complaints: "Контрольный осмотр после аппендэктомии",
+      anamnesis: "Операция 7 дней назад",
+      objectiveStatus: "Швы чистые, без признаков воспаления, заживление первичным натяжением",
+      doctorName: "Григорьев Пётр Сергеевич",
+      doctorPosition: "surgeon"
+    }
+  },
+  {
+    id: 14,
+    name: "Вариант 14",
+    description: "Шаблон для пациентов с мигренью",
+    fields: {
+      lastName: "Семёнова",
+      firstName: "Алина",
+      middleName: "Алексеевна",
+      birthDate: "1989-06-23",
+      gender: "female",
+      phone: "+7 (921) 111-22-33",
+      email: "semenova@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Будапештская, д. 34, кв. 89",
+      passportSeries: "4037",
+      passportNumber: "369147",
+      passportIssueDate: "2011-04-15",
+      passportIssuedBy: "ОВД Фрунзенского района Санкт-Петербурга",
+      insuranceNumber: "369-147-258 99",
+      policyNumber: "3691472580369147",
+      bloodType: "4-",
+      allergies: "Шоколад",
+      medications: "Суматриптан",
+      visitType: "primary",
+      department: "neurology",
+      complaints: "Сильная головная боль пульсирующего характера",
+      anamnesis: "Мигрень с аурой в течение 7 лет",
+      objectiveStatus: "Светобоязнь, тошнота, неврологический статус без очаговой симптоматики",
+      doctorName: "Алексеев Денис Владимирович",
+      doctorPosition: "neurologist"
+    }
+  },
+  {
+    id: 15,
+    name: "Вариант 15",
+    description: "Шаблон для пациентов с биполярным расстройством",
+    fields: {
+      lastName: "Романов",
+      firstName: "Артём",
+      middleName: "Викторович",
+      birthDate: "1980-10-30",
+      gender: "male",
+      phone: "+7 (981) 222-33-44",
+      email: "romanov@mcb.ru",
+      address: "г. Санкт-Петербург, пр. Космонавтов, д. 78, кв. 12",
+      passportSeries: "4040",
+      passportNumber: "147258",
+      passportIssueDate: "2008-12-20",
+      passportIssuedBy: "ОВД Московского района Санкт-Петербурга",
+      insuranceNumber: "147-258-369 00",
+      policyNumber: "1472583690147258",
+      bloodType: "1+",
+      allergies: "Орехи",
+      medications: "Вальпроат натрия, Оланзапин",
+      visitType: "followup",
+      department: "psychiatry",
+      complaints: "Стабилизация настроения, профилактика обострений",
+      anamnesis: "Диагноз с 25 лет, последний год стабильное состояние",
+      objectiveStatus: "Настроение ровное, продуктивной симптоматики нет",
+      doctorName: "Сергеева Наталья Павловна",
+      doctorPosition: "psychiatrist"
+    }
+  },
+  {
+    id: 16,
+    name: "Вариант 16",
+    description: "Шаблон для пациентов с нарушениями ритма",
+    fields: {
+      lastName: "Тимофеева",
+      firstName: "Людмила",
+      middleName: "Ивановна",
+      birthDate: "1968-03-15",
+      gender: "female",
+      phone: "+7 (911) 333-44-55",
+      email: "timofeeva@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Типанова, д. 45, кв. 56",
+      passportSeries: "4043",
+      passportNumber: "963852",
+      passportIssueDate: "2006-06-10",
+      passportIssuedBy: "ОВД Московского района Санкт-Петербурга",
+      insuranceNumber: "963-852-741 11",
+      policyNumber: "9638527410963852",
+      bloodType: "3+",
+      allergies: "Нет",
+      medications: "Бисопролол, Амиодарон",
+      visitType: "planned",
+      department: "cardiology",
+      complaints: "Перебои в работе сердца, сердцебиение",
+      anamnesis: "Мерцательная аритмия в течение 2 лет",
+      objectiveStatus: "Пульс 86, аритмичный, ЧСС 90, тоны сердца неритмичные",
+      doctorName: "Николаев Сергей Иванович",
+      doctorPosition: "cardiologist"
+    }
+  },
+  {
+    id: 17,
+    name: "Вариант 17",
+    description: "Шаблон для перевязочной медсестры",
+    fields: {
+      lastName: "Филиппова",
+      firstName: "Ольга",
+      middleName: "Николаевна",
+      birthDate: "1973-12-05",
+      gender: "female",
+      phone: "+7 (921) 444-55-66",
+      email: "filippova@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Коллонтай, д. 56, кв. 78",
+      passportSeries: "4046",
+      passportNumber: "258369",
+      passportIssueDate: "2009-09-05",
+      passportIssuedBy: "ОВД Невского района Санкт-Петербурга",
+      insuranceNumber: "258-369-147 22",
+      policyNumber: "2583691470258369",
+      bloodType: "2-",
+      allergies: "Лейкопластырь",
+      medications: "Мирамистин, Левомеколь",
+      visitType: "followup",
+      department: "surgery",
+      complaints: "Смена повязки, осмотр послеоперационной раны",
+      anamnesis: "Операция по поводу флегмоны",
+      objectiveStatus: "Рана чистая, гранулирует, отделяемого нет",
+      doctorName: "Медведева Татьяна Сергеевна",
+      doctorPosition: "nurse"
+    }
+  },
+  {
+    id: 18,
+    name: "Вариант 18",
+    description: "Шаблон для пациентов с бронхитом",
+    fields: {
+      lastName: "Герасимов",
+      firstName: "Анатолий",
+      middleName: "Борисович",
+      birthDate: "1963-08-19",
+      gender: "male",
+      phone: "+7 (931) 555-66-77",
+      email: "gerasimov@mcb.ru",
+      address: "г. Санкт-Петербург, пр. Стачек, д. 90, кв. 34",
+      passportSeries: "4049",
+      passportNumber: "741852",
+      passportIssueDate: "2005-03-28",
+      passportIssuedBy: "ОВД Кировского района Санкт-Петербурга",
+      insuranceNumber: "741-852-963 33",
+      policyNumber: "7418529630741852",
+      bloodType: "4+",
+      allergies: "Аспирин",
+      medications: "Амброксол, Беродуал",
+      visitType: "primary",
+      department: "therapy",
+      complaints: "Кашель с мокротой, одышка при нагрузке",
+      anamnesis: "Курит 30 лет, обострение хронического бронхита",
+      objectiveStatus: "Дыхание жесткое, сухие хрипы, ЧДД 18",
+      doctorName: "Сорокина Елена Викторовна",
+      doctorPosition: "therapist"
+    }
+  },
+  {
+    id: 19,
+    name: "Вариант 19",
+    description: "Шаблон для пациентов с грыжей",
+    fields: {
+      lastName: "Борисов",
+      firstName: "Владислав",
+      middleName: "Андреевич",
+      birthDate: "1985-01-27",
+      gender: "male",
+      phone: "+7 (911) 666-77-88",
+      email: "borisov@mcb.ru",
+      address: "г. Санкт-Петербург, ул. Кораблестроителей, д. 23, кв. 45",
+      passportSeries: "4052",
+      passportNumber: "456123",
+      passportIssueDate: "2010-07-14",
+      passportIssuedBy: "ОВД Василеостровского района Санкт-Петербурга",
+      insuranceNumber: "456-123-789 44",
+      policyNumber: "4561237890456123",
+      bloodType: "1-",
+      allergies: "Новокаин",
+      medications: "",
+      visitType: "planned",
+      department: "surgery",
+      complaints: "Выпячивание в паховой области при нагрузке",
+      anamnesis: "Появилось полгода назад, постепенно увеличивается",
+      objectiveStatus: "Паховая грыжа справа, вправимая, симптом кашлевого толчка положительный",
+      doctorName: "Кузнецов Денис Андреевич",
+      doctorPosition: "surgeon"
+    }
+  },
+  {
+    id: 20,
+    name: "Вариант 20",
+    description: "Шаблон для пациентов с гастритом",
+    fields: {
+      lastName: "Соловьёв",
+      firstName: "Максим",
+      middleName: "Олегович",
+      birthDate: "1992-04-18",
+      gender: "male",
+      phone: "+7 (921) 777-88-99",
+      email: "soloviev@mcb.ru",
+      address: "г. Санкт-Петербург, пр. Луначарского, д. 34, кв. 67",
+      passportSeries: "4055",
+      passportNumber: "789654",
+      passportIssueDate: "2014-09-22",
+      passportIssuedBy: "ОВД Выборгского района Санкт-Петербурга",
+      insuranceNumber: "789-654-321 55",
+      policyNumber: "7896543210789654",
+      bloodType: "3+",
+      allergies: "Нет",
+      medications: "Омепразол, Де-Нол",
+      visitType: "primary",
+      department: "therapy",
+      complaints: "Боли в желудке после еды, изжога",
+      anamnesis: "Симптомы появились месяц назад, связывает с питанием",
+      objectiveStatus: "Живот мягкий, болезненность в эпигастрии, язык обложен",
+      doctorName: "Петрова Анна Сергеевна",
+      doctorPosition: "therapist"
+    }
+  }
+];
+
+// Класс для управления шаблонами с посимвольным сравнением
+class TemplateManager {
+  constructor() {
+    this.templates = BUILT_IN_TEMPLATES;
+    this.comparisonResults = null;
+  }
+
+  // Получить все шаблоны
+  getAllTemplates() {
+    return this.templates;
+  }
+
+  // Получить шаблон по ID
+  getTemplateById(id) {
+    return this.templates.find(t => t.id === id);
+  }
+
+  // Посимвольное сравнение строк
+  compareStringsByChar(str1, str2) {
+    const s1 = String(str1 || '');
+    const s2 = String(str2 || '');
+    
+    let errors = 0;
+    const maxLength = Math.max(s1.length, s2.length);
+    
+    // Сравниваем посимвольно
+    for (let i = 0; i < maxLength; i++) {
+      const char1 = s1[i] || '';
+      const char2 = s2[i] || '';
+      
+      if (char1 !== char2) {
+        errors++;
+      }
+    }
+    
+    return {
+      errors: errors,
+      totalChars: maxLength,
+      accuracy: maxLength > 0 ? ((maxLength - errors) / maxLength * 100) : 100
+    };
+  }
+
+  // Сравнение текущих данных с шаблоном (посимвольно)
+  compareWithTemplate(patientData, template) {
+    const mismatches = [];
+    const matches = [];
+    let totalErrors = 0;
+    let totalChars = 0;
+
+    // Все поля для сравнения (полный список)
+    const allFields = [
+      'lastName', 'firstName', 'middleName', 'birthDate', 'gender',
+      'phone', 'email', 'address',
+      'passportSeries', 'passportNumber', 'passportIssueDate', 'passportIssuedBy',
+      'insuranceNumber', 'policyNumber', 'bloodType',
+      'allergies', 'medications',
+      'visitType', 'department', 'complaints', 'anamnesis', 'objectiveStatus',
+      'doctorName', 'doctorPosition'
+    ];
+
+    allFields.forEach(field => {
+      const patientValue = this.formatValueForComparison(field, patientData[field]);
+      const templateValue = this.formatValueForComparison(field, template[field]);
+
+      // Пропускаем, если в шаблоне нет этого поля
+      if (template[field] === undefined) return;
+
+      const comparison = this.compareStringsByChar(patientValue, templateValue);
+      
+      totalErrors += comparison.errors;
+      totalChars += comparison.totalChars;
+
+      if (comparison.errors === 0) {
+        matches.push({ 
+          field, 
+          value: patientValue, 
+          template: templateValue,
+          comparison 
+        });
+      } else {
+        mismatches.push({ 
+          field, 
+          value: patientValue, 
+          template: templateValue,
+          comparison 
+        });
+      }
+    });
+
+    const matchPercentage = totalChars > 0 ? ((totalChars - totalErrors) / totalChars * 100) : 100;
+
+    return {
+      templateName: template.name,
+      templateId: template.id,
+      templateDescription: template.description,
+      matchPercentage: Math.round(matchPercentage * 100) / 100,
+      totalErrors,
+      totalChars,
+      correctChars: totalChars - totalErrors,
+      matches,
+      mismatches,
+      totalFields: matches.length + mismatches.length
+    };
+  }
+
+  // Форматирование значения для сравнения
+  formatValueForComparison(field, value) {
+    if (value === undefined || value === null || value === '') {
+      return '';
+    }
+
+    // Для полей с выбором (select) преобразуем в читаемый текст
+    if (field === 'gender') {
+      if (value === 'male') return 'Мужской';
+      if (value === 'female') return 'Женский';
+    }
+
+    if (field === 'doctorPosition') {
+      if (value === 'therapist') return 'Терапевт';
+      if (value === 'surgeon') return 'Хирург';
+      if (value === 'neurologist') return 'Невролог';
+      if (value === 'psychiatrist') return 'Психиатр';
+      if (value === 'cardiologist') return 'Кардиолог';
+      if (value === 'nurse') return 'Медсестра';
+      if (value === 'pediatrician') return 'Педиатр';
+    }
+
+    if (field === 'visitType') {
+      if (value === 'primary') return 'Первичное';
+      if (value === 'followup') return 'Повторное';
+      if (value === 'emergency') return 'Экстренное';
+      if (value === 'planned') return 'Плановое';
+    }
+
+    if (field === 'department') {
+      if (value === 'therapy') return 'Терапевтическое';
+      if (value === 'surgery') return 'Хирургическое';
+      if (value === 'neurology') return 'Неврологическое';
+      if (value === 'psychiatry') return 'Психиатрическое';
+      if (value === 'cardiology') return 'Кардиологическое';
+      if (value === 'pediatrics') return 'Педиатрическое';
+    }
+
+    if (field === 'bloodType') {
+      if (value === '1+') return 'I (+)';
+      if (value === '1-') return 'I (-)';
+      if (value === '2+') return 'II (+)';
+      if (value === '2-') return 'II (-)';
+      if (value === '3+') return 'III (+)';
+      if (value === '3-') return 'III (-)';
+      if (value === '4+') return 'IV (+)';
+      if (value === '4-') return 'IV (-)';
+    }
+
+    // Для дат форматируем в читаемый вид
+    if (field === 'birthDate' || field === 'passportIssueDate') {
+      if (value) {
+        const date = new Date(value);
+        return date.toLocaleDateString('ru-RU');
+      }
+    }
+
+    return String(value);
+  }
+
+  // Форматирование значения для отображения
+  formatValueForDisplay(field, value) {
+    return this.formatValueForComparison(field, value);
+  }
+
+  // Получение цветного представления строки для отображения различий
+  getColoredDiff(str1, str2) {
+    const s1 = String(str1 || '');
+    const s2 = String(str2 || '');
+    const maxLength = Math.max(s1.length, s2.length);
+    
+    let result = '';
+    
+    for (let i = 0; i < maxLength; i++) {
+      const char1 = s1[i] || '';
+      const char2 = s2[i] || '';
+      
+      if (char1 === char2 && char1 !== '') {
+        result += `<span class="char-match">${char1}</span>`;
+      } else if (char1 !== '' && char2 !== '') {
+        result += `<span class="char-mismatch" title="Ожидалось: ${char2}">${char1}</span>`;
+      } else if (char1 === '' && char2 !== '') {
+        result += `<span class="char-missing" title="Пропущен символ: ${char2}">_</span>`;
+      } else if (char1 !== '' && char2 === '') {
+        result += `<span class="char-mismatch" title="Лишний символ">${char1}</span>`;
+      }
+    }
+    
+    return result;
+  }
+}
+
 class PatientCard {
 constructor() {
 // Элементы для ввода данных оператора
@@ -807,7 +1785,8 @@ this.operatorEnterBtn = document.getElementById('operator-enter-btn');
 this.operatorErrorBox = document.getElementById('operator-error-box');
 this.operatorNameDisplay = document.getElementById('operator-name-display');
 this.operatorGroupDisplay = document.getElementById('operator-group-display');
-this.changeOperatorBtn = document.getElementById('change-operator-btn'); // Кнопка смены оператора
+this.changeOperatorBtn = document.getElementById('change-operator-btn');
+
 // Элементы основной формы
 this.patientId = document.getElementById('patient-id');
 this.creationDate = document.getElementById('creation-date');
@@ -831,21 +1810,305 @@ this.endInputBtn = document.getElementById('end-input-btn');
 this.timerContainer = document.getElementById('timer-container');
 this.timerDisplay = document.getElementById('timer-display');
 this.timerStatus = document.getElementById('timer-status');
+
 // Таймер
 this.timer = null;
 this.startTime = null;
 this.elapsedTime = 0;
 this.isInputActive = false;
+
 // Данные оператора
 this.operatorName = '';
 this.operatorGroup = '';
+
+// Инициализация менеджера шаблонов
+this.templateManager = new TemplateManager();
+
+// Создание UI для сравнения с шаблонами
+this.createTemplateComparisonUI();
+
 // Инициализация
 this.initEventListeners();
+
 // Проверка загрузки библиотеки docx
 this.checkDocxLibrary();
+
 // Загрузка данных оператора из localStorage
 this.loadOperatorData();
 }
+
+createTemplateComparisonUI() {
+// Находим контейнер с кнопками
+const controls = document.querySelector('.controls');
+    
+// Создаем секцию для шаблонов
+const templateSection = document.createElement('div');
+templateSection.className = 'form-section';
+templateSection.id = 'template-section';
+templateSection.innerHTML = `
+  <h2 class="section-title">📋 Сравнение с шаблонами</h2>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="template-select">Выберите шаблон для сравнения:</label>
+      <select id="template-select" class="template-select" disabled>
+        <option value="">Загрузка шаблонов...</option>
+      </select>
+    </div>
+    <div class="form-group" style="display: flex; align-items: flex-end;">
+      <button class="btn btn-outline" id="compare-template-btn" disabled>
+        <span>🔍</span> Сравнить с шаблоном
+      </button>
+    </div>
+  </div>
+  <div class="template-description" id="template-description" style="display: none;"></div>
+  <div class="comparison-results" id="comparison-results" style="display: none;">
+    <h3>Результаты сравнения:</h3>
+    <div class="total-stats" id="total-stats"></div>
+    <div class="match-stats">
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="match-progress">0%</div>
+      </div>
+      <div class="stats-text" id="stats-text"></div>
+    </div>
+    <div class="comparison-details" id="comparison-details"></div>
+  </div>
+`;
+
+controls.parentNode.insertBefore(templateSection, controls.nextSibling);
+
+// Получаем ссылки на новые элементы
+this.templateSelect = document.getElementById('template-select');
+this.compareTemplateBtn = document.getElementById('compare-template-btn');
+this.templateDescription = document.getElementById('template-description');
+this.comparisonResultsDiv = document.getElementById('comparison-results');
+this.matchProgress = document.getElementById('match-progress');
+this.statsText = document.getElementById('stats-text');
+this.totalStats = document.getElementById('total-stats');
+this.comparisonDetails = document.getElementById('comparison-details');
+
+// Заполняем список шаблонов
+this.loadTemplates();
+
+// Добавляем обработчики
+this.templateSelect.addEventListener('change', () => this.onTemplateSelect());
+this.compareTemplateBtn.addEventListener('click', () => this.compareWithTemplate());
+}
+
+loadTemplates() {
+const templates = this.templateManager.getAllTemplates();
+    
+if (templates.length === 0) {
+  this.templateSelect.innerHTML = '<option value="">Нет доступных шаблонов</option>';
+  return;
+}
+
+let options = '<option value="">Выберите шаблон</option>';
+templates.forEach(template => {
+  options += `<option value="${template.id}">${template.name}</option>`;
+});
+
+this.templateSelect.innerHTML = options;
+
+// По умолчанию блокируем кнопку
+this.compareTemplateBtn.disabled = true;
+}
+
+onTemplateSelect() {
+const templateId = parseInt(this.templateSelect.value);
+    
+if (templateId) {
+  const template = this.templateManager.getTemplateById(templateId);
+  if (template) {
+    this.templateDescription.style.display = 'block';
+    this.templateDescription.innerHTML = `
+      <strong>Описание шаблона:</strong> ${template.description || 'Нет описания'}
+    `;
+    this.compareTemplateBtn.disabled = false;
+  }
+} else {
+  this.templateDescription.style.display = 'none';
+  this.compareTemplateBtn.disabled = true;
+}
+
+// Скрываем предыдущие результаты
+this.comparisonResultsDiv.style.display = 'none';
+}
+
+collectPatientDataForComparison() {
+return {
+  lastName: document.getElementById('lastName').value,
+  firstName: document.getElementById('firstName').value,
+  middleName: document.getElementById('middleName').value,
+  birthDate: document.getElementById('birthDate').value,
+  gender: document.getElementById('gender').value,
+  phone: document.getElementById('phone').value,
+  email: document.getElementById('email').value,
+  address: document.getElementById('address').value,
+  passportSeries: document.getElementById('passportSeries').value,
+  passportNumber: document.getElementById('passportNumber').value,
+  passportIssueDate: document.getElementById('passportIssueDate').value,
+  passportIssuedBy: document.getElementById('passportIssuedBy').value,
+  insuranceNumber: document.getElementById('insuranceNumber').value,
+  policyNumber: document.getElementById('policyNumber').value,
+  bloodType: document.getElementById('bloodType').value,
+  allergies: document.getElementById('allergies').value,
+  medications: document.getElementById('medications').value,
+  visitType: document.getElementById('visitType').value,
+  department: document.getElementById('department').value,
+  complaints: document.getElementById('complaints').value,
+  anamnesis: document.getElementById('anamnesis').value,
+  objectiveStatus: document.getElementById('objectiveStatus').value,
+  doctorName: document.getElementById('doctorName').value,
+  doctorPosition: document.getElementById('doctorPosition').value
+};
+}
+
+compareWithTemplate() {
+const templateId = parseInt(this.templateSelect.value);
+if (!templateId) {
+  this.showError('Пожалуйста, выберите шаблон для сравнения');
+  return;
+}
+
+// Проверка заполнения обязательных полей
+if (!this.validateForm()) {
+  this.showError('Пожалуйста, заполните все обязательные поля перед сравнением');
+  return;
+}
+
+const template = this.templateManager.getTemplateById(templateId);
+if (!template) {
+  this.showError('Шаблон не найден');
+  return;
+}
+
+const patientData = this.collectPatientDataForComparison();
+const comparison = this.templateManager.compareWithTemplate(patientData, template.fields);
+
+this.displayComparisonResults(comparison);
+}
+
+displayComparisonResults(comparison) {
+this.comparisonResultsDiv.style.display = 'block';
+
+// Общая статистика
+const accuracy = comparison.matchPercentage.toFixed(2);
+this.totalStats.innerHTML = `
+  <strong>Всего символов:</strong> <span>${comparison.totalChars}</span><br>
+  <strong>Правильных символов:</strong> <span style="color: #28a745;">${comparison.correctChars}</span><br>
+  <strong>Ошибок:</strong> <span style="color: #dc3545;">${comparison.totalErrors}</span><br>
+  <strong>Точность:</strong> <span style="color: ${accuracy >= 80 ? '#28a745' : (accuracy >= 50 ? '#ffc107' : '#dc3545')};">${accuracy}%</span>
+`;
+
+// Обновляем прогресс-бар
+this.matchProgress.style.width = `${accuracy}%`;
+this.matchProgress.textContent = `${accuracy}%`;
+
+// Изменяем цвет прогресс-бара в зависимости от процента
+if (accuracy >= 80) {
+  this.matchProgress.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+} else if (accuracy >= 50) {
+  this.matchProgress.style.background = 'linear-gradient(90deg, #ffc107, #fd7e14)';
+} else {
+  this.matchProgress.style.background = 'linear-gradient(90deg, #dc3545, #c82333)';
+}
+
+// Текст статистики
+this.statsText.innerHTML = `
+  Проверено полей: ${comparison.totalFields}<br>
+  Полностью совпадает: ${comparison.matches.length}<br>
+  С расхождениями: ${comparison.mismatches.length}
+`;
+
+// Детали сравнения
+let detailsHtml = '';
+
+// Сначала показываем расхождения (если есть)
+if (comparison.mismatches.length > 0) {
+  detailsHtml += '<h4 style="color: #dc3545; margin-top: 15px;">🔴 Расхождения (посимвольно):</h4>';
+  comparison.mismatches.forEach(item => {
+    const patientDisplay = this.templateManager.formatValueForDisplay(item.field, item.value);
+    const templateDisplay = this.templateManager.formatValueForDisplay(item.field, item.template);
+    const coloredDiff = this.templateManager.getColoredDiff(item.value, item.template);
+    
+    detailsHtml += `
+      <div class="mismatch-item">
+        <div class="field-name">${this.getFieldDisplayName(item.field)}</div>
+        <div class="field-values">
+          <div class="patient-value"><strong>Введено:</strong> ${patientDisplay}</div>
+          <div class="template-value"><strong>Шаблон:</strong> ${templateDisplay}</div>
+          <div class="char-comparison">
+            <strong>Посимвольно:</strong><br>
+            ${coloredDiff}
+          </div>
+          <div style="font-size: 12px; margin-top: 5px; color: #666;">
+            Ошибок: ${item.comparison.errors} из ${item.comparison.totalChars} символов
+            (${(100 - item.comparison.accuracy).toFixed(1)}%)
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Показываем совпадения
+if (comparison.matches.length > 0) {
+  detailsHtml += '<h4 style="color: #28a745; margin-top: 15px;">🟢 Полные совпадения:</h4>';
+  comparison.matches.forEach(item => {
+    const patientDisplay = this.templateManager.formatValueForDisplay(item.field, item.value);
+    
+    detailsHtml += `
+      <div class="match-item">
+        <div class="field-name">${this.getFieldDisplayName(item.field)}</div>
+        <div class="field-values">
+          <div class="patient-value">${patientDisplay}</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+this.comparisonDetails.innerHTML = detailsHtml;
+
+// Показываем уведомление
+if (comparison.totalErrors === 0) {
+  this.showSuccess(`✅ Полное совпадение с шаблоном! Точность: ${accuracy}%`);
+} else {
+  this.showError(`⚠️ Обнаружено ${comparison.totalErrors} ошибок в ${comparison.totalChars} символах. Точность: ${accuracy}%`);
+}
+}
+
+getFieldDisplayName(field) {
+const names = {
+  'lastName': 'Фамилия',
+  'firstName': 'Имя',
+  'middleName': 'Отчество',
+  'birthDate': 'Дата рождения',
+  'age': 'Возраст',
+  'gender': 'Пол',
+  'phone': 'Телефон',
+  'email': 'Email',
+  'address': 'Адрес',
+  'passportSeries': 'Серия паспорта',
+  'passportNumber': 'Номер паспорта',
+  'passportIssueDate': 'Дата выдачи паспорта',
+  'passportIssuedBy': 'Кем выдан паспорт',
+  'insuranceNumber': 'СНИЛС',
+  'policyNumber': 'Полис ОМС',
+  'bloodType': 'Группа крови',
+  'allergies': 'Аллергии',
+  'medications': 'Препараты',
+  'visitType': 'Тип обращения',
+  'department': 'Отделение',
+  'complaints': 'Жалобы',
+  'anamnesis': 'Анамнез',
+  'objectiveStatus': 'Объективный статус',
+  'doctorName': 'ФИО врача',
+  'doctorPosition': 'Должность врача'
+};
+return names[field] || field;
+}
+
 checkDocxLibrary() {
 if (typeof docx === 'undefined' || typeof docx.Packer === 'undefined') {
 console.warn('Библиотека docx не загружена. Печать будет работать через браузерную печать.');
@@ -855,231 +2118,263 @@ this.docxAvailable = true;
 console.log('Библиотека docx успешно загружена');
 }
 }
+
 initEventListeners() {
 // Обработчик кнопки "Ввод" для оператора
 this.operatorEnterBtn.addEventListener('click', () => this.handleOperatorEnter());
+
 // Обработчик кнопки "Сменить оператора"
 this.changeOperatorBtn.addEventListener('click', () => this.changeOperator());
+
 // Основные обработчики формы пациента
 this.birthDateInput.addEventListener('change', () => this.calculateAge());
 this.saveBtn.addEventListener('click', () => this.savePatientData());
 this.resetBtn.addEventListener('click', () => this.resetForm());
 this.printBtn.addEventListener('click', () => this.generateWordDocument());
 this.newPatientBtn.addEventListener('click', () => this.createNewPatient());
+
 // Кнопки начала и окончания ввода
 this.startInputBtn.addEventListener('click', () => this.startInput());
 this.endInputBtn.addEventListener('click', () => this.endInput());
+
 // Валидация при вводе
 document.querySelectorAll('input, textarea, select').forEach(element => {
-element.addEventListener('blur', (e) => this.validateField(e.target));
+  element.addEventListener('blur', (e) => this.validateField(e.target));
 });
+
 // Валидация поля "Email" в реальном времени
 this.emailInput.addEventListener('input', (e) => {
-this.validateEmail(e.target);
+  this.validateEmail(e.target);
 });
+
 // Обработчик для чекбокса "Другое"
 this.otherCheckbox.addEventListener('change', (e) => {
-this.toggleOtherDiseaseInput(e.target.checked);
+  this.toggleOtherDiseaseInput(e.target.checked);
 });
+
 // Исправленный обработчик телефона
 document.getElementById('phone').addEventListener('input', function(e) {
-let value = e.target.value.replace(/\D/g, '');
-// Если строка начинается с 7 и длина больше 1, убираем первую 7
-if (value.startsWith('7') && value.length > 1) {
-value = value.substring(1);
-}
-// Если после обработки остается только "7", сбрасываем в "+7"
-if (value === '7') {
-e.target.value = '+7';
-return;
-}
-// Если введены цифры
-if (value.length > 0) {
-// Если начинается с 7, убираем его для форматирования
-if (value.startsWith('7') && value.length > 1) {
-value = value.substring(1);
-}
-// Формируем строку
-let formatted = '+7';
-if (value.length > 0) {
-formatted += ' (' + value.substring(0, 3);
-if (value.length > 3) {
-formatted += ') ' + value.substring(3, 6);
-if (value.length > 6) {
-formatted += '-' + value.substring(6, 8);
-if (value.length > 8) {
-formatted += '-' + value.substring(8, 10);
-}
-}
-}
-}
-e.target.value = formatted;
-} else {
-e.target.value = '+7';
-}
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.startsWith('7') && value.length > 1) {
+    value = value.substring(1);
+  }
+  if (value === '7') {
+    e.target.value = '+7';
+    return;
+  }
+  if (value.length > 0) {
+    if (value.startsWith('7') && value.length > 1) {
+      value = value.substring(1);
+    }
+    let formatted = '+7';
+    if (value.length > 0) {
+      formatted += ' (' + value.substring(0, 3);
+      if (value.length > 3) {
+        formatted += ') ' + value.substring(3, 6);
+        if (value.length > 6) {
+          formatted += '-' + value.substring(6, 8);
+          if (value.length > 8) {
+            formatted += '-' + value.substring(8, 10);
+          }
+        }
+      }
+    }
+    e.target.value = formatted;
+  } else {
+    e.target.value = '+7';
+  }
 });
+
 // Обработчик для СНИЛС
 document.getElementById('insuranceNumber').addEventListener('input', function(e) {
-let value = e.target.value.replace(/\D/g, '');
-if (value.length > 0) {
-if (value.length > 3) {
-value = value.substring(0, 3) + '-' + value.substring(3);
-}
-if (value.length > 7) {
-value = value.substring(0, 7) + '-' + value.substring(7);
-}
-if (value.length > 11) {
-value = value.substring(0, 11) + ' ' + value.substring(11, 13);
-}
-e.target.value = value.substring(0, 14);
-}
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.length > 0) {
+    if (value.length > 3) {
+      value = value.substring(0, 3) + '-' + value.substring(3);
+    }
+    if (value.length > 7) {
+      value = value.substring(0, 7) + '-' + value.substring(7);
+    }
+    if (value.length > 11) {
+      value = value.substring(0, 11) + ' ' + value.substring(11, 13);
+    }
+    e.target.value = value.substring(0, 14);
+  }
 });
-// ОБРАБОТЧИКИ ДЛЯ ОГРАНИЧЕНИЯ ВВОДА ГОДА В ПОЛЯХ ДАТЫ
+
+// Ограничение ввода года в полях даты
 this.setupDateInputLimit();
 }
-// НОВЫЙ МЕТОД: ограничение ввода года до 4 символов
+
 setupDateInputLimit() {
-// Получаем все поля типа date в контейнере пациента
 const dateInputs = this.patientContainer.querySelectorAll('input[type="date"]');
 dateInputs.forEach(input => {
-// Обработчик для события ввода
-input.addEventListener('input', (e) => {
-this.limitYearInput(e.target);
-});
-// Обработчик для события изменения
-input.addEventListener('change', (e) => {
-this.limitYearInput(e.target);
-});
+  input.addEventListener('input', (e) => {
+    this.limitYearInput(e.target);
+  });
+  input.addEventListener('change', (e) => {
+    this.limitYearInput(e.target);
+  });
 });
 }
-// НОВЫЙ МЕТОД: ограничение года до 4 символов
+
 limitYearInput(input) {
 let value = input.value;
 if (value) {
-let parts = value.split('-');
-if (parts.length === 3) {
-let year = parts[0];
-// Если год длиннее 4 символов, обрезаем до 4
-if (year.length > 4) {
-year = year.substring(0, 4);
-input.value = `${year}-${parts[1]}-${parts[2]}`;
-// Если это поле даты рождения, пересчитываем возраст
-if (input.id === 'birthDate') {
-this.calculateAge();
-}
-// Если это поле даты выдачи паспорта или даты обращения, ничего не делаем
-}
+  let parts = value.split('-');
+  if (parts.length === 3) {
+    let year = parts[0];
+    if (year.length > 4) {
+      year = year.substring(0, 4);
+      input.value = `${year}-${parts[1]}-${parts[2]}`;
+      if (input.id === 'birthDate') {
+        this.calculateAge();
+      }
+    }
+  }
 }
 }
-}
+
 handleOperatorEnter() {
 const name = this.operatorNameInput.value.trim();
 const group = this.operatorGroupInput.value.trim();
+
 if (!name || !group) {
-this.operatorErrorBox.style.display = 'block';
-setTimeout(() => {
-this.operatorErrorBox.style.display = 'none';
-}, 3000);
-return;
+  this.operatorErrorBox.style.display = 'block';
+  setTimeout(() => {
+    this.operatorErrorBox.style.display = 'none';
+  }, 3000);
+  return;
 }
+
 // Сохранение данных оператора
 this.operatorName = name;
 this.operatorGroup = group;
 localStorage.setItem('operatorName', name);
 localStorage.setItem('operatorGroup', group);
+
 // Отображение данных оператора
 this.operatorNameDisplay.textContent = name;
 this.operatorGroupDisplay.textContent = group;
+
 // Скрытие контейнера оператора и показ контейнера пациента
 this.operatorContainer.classList.add('hidden');
 this.patientContainer.classList.remove('hidden');
+
+// Разблокируем выбор шаблонов
+if (this.templateSelect) {
+  this.templateSelect.disabled = false;
+}
+
 // Установка текущей даты и генерация номера пациента
 this.setupPatientForm();
 }
+
 loadOperatorData() {
 const savedName = localStorage.getItem('operatorName');
 const savedGroup = localStorage.getItem('operatorGroup');
+
 if (savedName && savedGroup) {
-this.operatorName = savedName;
-this.operatorGroup = savedGroup;
-this.operatorNameInput.value = savedName;
-this.operatorGroupInput.value = savedGroup;
-// Если данные оператора сохранены, сразу показываем форму пациента
-this.operatorContainer.classList.add('hidden');
-this.patientContainer.classList.remove('hidden');
-this.operatorNameDisplay.textContent = savedName;
-this.operatorGroupDisplay.textContent = savedGroup;
-// Установка текущей даты и генерация номера пациента
-this.setupPatientForm();
+  this.operatorName = savedName;
+  this.operatorGroup = savedGroup;
+  this.operatorNameInput.value = savedName;
+  this.operatorGroupInput.value = savedGroup;
+
+  // Если данные оператора сохранены, сразу показываем форму пациента
+  this.operatorContainer.classList.add('hidden');
+  this.patientContainer.classList.remove('hidden');
+  this.operatorNameDisplay.textContent = savedName;
+  this.operatorGroupDisplay.textContent = savedGroup;
+
+  // Разблокируем выбор шаблонов
+  if (this.templateSelect) {
+    this.templateSelect.disabled = false;
+  }
+
+  // Установка текущей даты и генерация номера пациента
+  this.setupPatientForm();
 }
 }
+
 setupPatientForm() {
 const today = new Date();
 const formattedDate = today.toISOString().split('T')[0];
 this.creationDate.textContent = this.formatDate(today);
 this.visitDateInput.value = formattedDate;
 this.lastUpdate.textContent = this.formatDateTime(today);
+
 // Генерация случайного номера пациента
 const randomNum = Math.floor(1000 + Math.random() * 9000);
 this.patientId.textContent = `PAT-${today.getFullYear()}-${randomNum}`;
+
 this.calculateAge();
 }
+
 formatDate(date) {
 return date.toLocaleDateString('ru-RU', {
-day: '2-digit',
-month: '2-digit',
-year: 'numeric'
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric'
 });
 }
+
 formatDateForDisplay(dateString) {
 if (!dateString) return '';
 const date = new Date(dateString);
 return date.toLocaleDateString('ru-RU', {
-day: '2-digit',
-month: '2-digit',
-year: 'numeric'
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric'
 });
 }
+
 formatDateTime(date) {
 return date.toLocaleDateString('ru-RU', {
-day: '2-digit',
-month: '2-digit',
-year: 'numeric',
-hour: '2-digit',
-minute: '2-digit'
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit'
 });
 }
+
 formatTime(seconds) {
 const hrs = Math.floor(seconds / 3600);
 const mins = Math.floor((seconds % 3600) / 60);
 const secs = seconds % 60;
 return [
-hrs.toString().padStart(2, '0'),
-mins.toString().padStart(2, '0'),
-secs.toString().padStart(2, '0')
+  hrs.toString().padStart(2, '0'),
+  mins.toString().padStart(2, '0'),
+  secs.toString().padStart(2, '0')
 ].join(':');
 }
+
 startInput() {
 // Очистка формы перед началом ввода
 this.clearFormWithoutConfirmation();
-// Разблокировать все поля ввода ТОЛЬКО в контейнере пациента
+
+// Разблокировать все поля ввода
 this.patientContainer.querySelectorAll('input:not([type="checkbox"]), textarea, select').forEach(field => {
-if (field.id !== 'age') {
-field.disabled = false;
-}
+  if (field.id !== 'age') {
+    field.disabled = false;
+  }
 });
-// Разблокировать чекбоксы ТОЛЬКО в контейнере пациента
+
+// Разблокировать чекбоксы
 this.patientContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-cb.disabled = false;
+  cb.disabled = false;
 });
+
 // Разблокировать кнопки
 this.saveBtn.disabled = false;
 this.resetBtn.disabled = false;
 this.printBtn.disabled = false;
 this.newPatientBtn.disabled = false;
+
 // Показать кнопку "Конец ввода"
 this.endInputBtn.style.display = 'block';
 this.startInputBtn.style.display = 'none';
+
 // Запустить таймер
 this.startTime = new Date();
 this.elapsedTime = 0;
@@ -1088,55 +2383,79 @@ this.timerStatus.textContent = 'Ввод активен';
 this.timerStatus.className = 'timer-status';
 this.startTimer();
 this.isInputActive = true;
+
 // Фокус на первое поле
 document.getElementById('lastName').focus();
+
 this.showSuccess('Ввод данных начат! Заполняйте форму.');
 }
+
 endInput() {
-// Остановить таймер
-this.stopTimer();
-this.isInputActive = false;
-// Заблокировать все поля ввода ТОЛЬКО в контейнере пациента
-this.patientContainer.querySelectorAll('input, textarea, select').forEach(field => {
-field.disabled = true;
-});
-// Кнопки "Сохранить", "Очистить", "Печать" остаются разблокированными
-this.saveBtn.disabled = false;
-this.resetBtn.disabled = false;
-this.printBtn.disabled = false;
-this.newPatientBtn.disabled = false;
-// Показать кнопку "Начать ввод"
-this.startInputBtn.style.display = 'block';
-this.endInputBtn.style.display = 'none';
-// Обновить статус таймера
-this.timerStatus.textContent = 'Ввод завершён';
-this.timerStatus.className = 'timer-status stopped';
-this.showSuccess(`Ввод данных завершён! Время ввода: ${this.timerDisplay.textContent}`);
+  // Остановить таймер
+  this.stopTimer();
+  this.isInputActive = false;
+
+  // Заблокировать только поля формы, НО НЕ трогать элементы шаблонов
+  this.patientContainer.querySelectorAll('input:not([type="checkbox"]), textarea, select').forEach(field => {
+    // Проверяем, что это не поле шаблона
+    if (field.id !== 'template-select' && 
+        field.id !== 'compare-template-btn' && 
+        !field.classList.contains('template-select')) {
+      field.disabled = true;
+    }
+  });
+
+  // Заблокировать чекбоксы (кроме элементов шаблонов)
+  this.patientContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    if (!cb.closest('#template-section')) {
+      cb.disabled = true;
+    }
+  });
+
+  // Кнопки остаются разблокированными
+  this.saveBtn.disabled = false;
+  this.resetBtn.disabled = false;
+  this.printBtn.disabled = false;
+  this.newPatientBtn.disabled = false;
+
+  // Показать кнопку "Начать ввод"
+  this.startInputBtn.style.display = 'block';
+  this.endInputBtn.style.display = 'none';
+
+  // Обновить статус таймера
+  this.timerStatus.textContent = 'Ввод завершён';
+  this.timerStatus.className = 'timer-status stopped';
+
+  this.showSuccess(`Ввод данных завершён! Время ввода: ${this.timerDisplay.textContent}`);
 }
+
 startTimer() {
 this.stopTimer();
 const startTime = Date.now() - this.elapsedTime * 1000;
 this.timer = setInterval(() => {
-const elapsed = Math.floor((Date.now() - startTime) / 1000);
-this.elapsedTime = elapsed;
-this.timerDisplay.textContent = this.formatTime(elapsed);
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  this.elapsedTime = elapsed;
+  this.timerDisplay.textContent = this.formatTime(elapsed);
 }, 1000);
 }
+
 stopTimer() {
 if (this.timer) {
-clearInterval(this.timer);
-this.timer = null;
+  clearInterval(this.timer);
+  this.timer = null;
 }
 }
+
 toggleOtherDiseaseInput(show) {
 if (show) {
-this.otherDiseaseInputContainer.style.display = 'block';
-this.otherDiseaseTextInput.focus();
+  this.otherDiseaseInputContainer.style.display = 'block';
+  this.otherDiseaseTextInput.focus();
 } else {
-this.otherDiseaseInputContainer.style.display = 'none';
-this.otherDiseaseTextInput.value = '';
+  this.otherDiseaseInputContainer.style.display = 'none';
+  this.otherDiseaseTextInput.value = '';
 }
 }
+
 calculateAge() {
 if (!this.birthDateInput.value) return;
 const birthDate = new Date(this.birthDateInput.value);
@@ -1144,562 +2463,627 @@ const today = new Date();
 let age = today.getFullYear() - birthDate.getFullYear();
 const monthDiff = today.getMonth() - birthDate.getMonth();
 if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-age--;
+  age--;
 }
 this.ageInput.value = age > 0 ? `${age} лет` : 'Недостаточно данных';
 }
+
 validateEmail(field) {
 const email = field.value.trim();
-// Если поле пустое - убираем ошибку
 if (email === '') {
-field.classList.remove('invalid-email');
-this.emailError.style.display = 'none';
-return true;
+  field.classList.remove('invalid-email');
+  this.emailError.style.display = 'none';
+  return true;
 }
-// Проверяем наличие символа "@" и домена
 if (!/.+@.+\..+/.test(email)) {
-field.classList.add('invalid-email');
-this.emailError.style.display = 'block';
-return false;
+  field.classList.add('invalid-email');
+  this.emailError.style.display = 'block';
+  return false;
 } else {
-field.classList.remove('invalid-email');
-this.emailError.style.display = 'none';
-return true;
+  field.classList.remove('invalid-email');
+  this.emailError.style.display = 'none';
+  return true;
 }
 }
+
 validateField(field) {
 const isRequired = field.classList.contains('required') || field.previousElementSibling?.classList.contains('required');
 if (isRequired && !field.value.trim()) {
-field.style.borderColor = '#dc3545';
-return false;
+  field.style.borderColor = '#dc3545';
+  return false;
 } else {
-field.style.borderColor = '#ddd';
-return true;
+  field.style.borderColor = '#ddd';
+  return true;
 }
 }
+
 validateForm() {
 let isValid = true;
+
 // Обязательные поля
 const requiredFields = [
-'lastName', 'firstName', 'birthDate', 'gender', 'phone',
-'visitDate', 'visitType', 'complaints', 'doctorName', 'doctorPosition'
+  'lastName', 'firstName', 'birthDate', 'gender', 'phone',
+  'visitDate', 'visitType', 'complaints', 'doctorName', 'doctorPosition'
 ];
+
 requiredFields.forEach(fieldId => {
-const field = document.getElementById(fieldId);
-if (!field.value.trim()) {
-field.style.borderColor = '#dc3545';
-isValid = false;
-} else {
-field.style.borderColor = '#ddd';
-}
+  const field = document.getElementById(fieldId);
+  if (!field.value.trim()) {
+    field.style.borderColor = '#dc3545';
+    isValid = false;
+  } else {
+    field.style.borderColor = '#ddd';
+  }
 });
+
 // Валидация поля "Email" (если заполнено)
 if (this.emailInput.value.trim() !== '') {
-if (!this.validateEmail(this.emailInput)) {
-isValid = false;
+  if (!this.validateEmail(this.emailInput)) {
+    isValid = false;
+  }
 }
-}
+
 // Валидация поля "Другое заболевание" если чекбокс выбран
 if (this.otherCheckbox.checked && !this.otherDiseaseTextInput.value.trim()) {
-this.otherDiseaseTextInput.style.borderColor = '#dc3545';
-isValid = false;
+  this.otherDiseaseTextInput.style.borderColor = '#dc3545';
+  isValid = false;
 } else {
-this.otherDiseaseTextInput.style.borderColor = '#ddd';
+  this.otherDiseaseTextInput.style.borderColor = '#ddd';
 }
+
 return isValid;
 }
+
 getChronicDiseasesText() {
 const checkboxes = document.querySelectorAll('input[name="chronic"]:checked');
 const diseases = [];
 checkboxes.forEach(cb => {
-if (cb.value === 'hypertension') diseases.push('Гипертония');
-else if (cb.value === 'diabetes') diseases.push('Сахарный диабет');
-else if (cb.value === 'asthma') diseases.push('Бронхиальная астма');
-else if (cb.value === 'heartDisease') diseases.push('Сердечно-сосудистые заболевания');
-else if (cb.value === 'thyroid') diseases.push('Заболевания щитовидной железы');
-else if (cb.value === 'other' && this.otherDiseaseTextInput.value.trim()) {
-diseases.push(this.otherDiseaseTextInput.value.trim());
-}
+  if (cb.value === 'hypertension') diseases.push('Гипертония');
+  else if (cb.value === 'diabetes') diseases.push('Сахарный диабет');
+  else if (cb.value === 'asthma') diseases.push('Бронхиальная астма');
+  else if (cb.value === 'heartDisease') diseases.push('Сердечно-сосудистые заболевания');
+  else if (cb.value === 'thyroid') diseases.push('Заболевания щитовидной железы');
+  else if (cb.value === 'other' && this.otherDiseaseTextInput.value.trim()) {
+    diseases.push(this.otherDiseaseTextInput.value.trim());
+  }
 });
 return diseases.length > 0 ? diseases.join(', ') : 'Не указаны';
 }
+
 getChronicDiseases() {
 const diseases = Array.from(document.querySelectorAll('input[name="chronic"]:checked'))
-.map(cb => cb.value);
+  .map(cb => cb.value);
+
 // Если выбрано "Другое" и есть текст, добавляем его
 if (this.otherCheckbox.checked && this.otherDiseaseTextInput.value.trim()) {
-const otherIndex = diseases.indexOf('other');
-if (otherIndex > -1) {
-diseases[otherIndex] = `other:${this.otherDiseaseTextInput.value.trim()}`;
-}
+  const otherIndex = diseases.indexOf('other');
+  if (otherIndex > -1) {
+    diseases[otherIndex] = `other:${this.otherDiseaseTextInput.value.trim()}`;
+  }
 }
 return diseases;
 }
+
 savePatientData() {
 if (!this.validateForm()) {
-this.showError('Пожалуйста, заполните все обязательные поля и исправьте ошибки.');
-return;
+  this.showError('Пожалуйста, заполните все обязательные поля и исправьте ошибки.');
+  return;
 }
+
 // Сбор данных
 const patientData = {
-patientId: this.patientId.textContent,
-creationDate: this.creationDate.textContent,
-lastName: document.getElementById('lastName').value,
-firstName: document.getElementById('firstName').value,
-middleName: document.getElementById('middleName').value,
-birthDate: this.birthDateInput.value,
-age: this.ageInput.value,
-gender: document.getElementById('gender').value,
-phone: document.getElementById('phone').value,
-email: document.getElementById('email').value,
-address: document.getElementById('address').value,
-passportSeries: document.getElementById('passportSeries').value,
-passportNumber: document.getElementById('passportNumber').value,
-passportIssueDate: document.getElementById('passportIssueDate').value,
-passportIssuedBy: document.getElementById('passportIssuedBy').value,
-insuranceNumber: document.getElementById('insuranceNumber').value,
-policyNumber: document.getElementById('policyNumber').value,
-bloodType: document.getElementById('bloodType').value,
-chronicDiseases: this.getChronicDiseases(),
-allergies: document.getElementById('allergies').value,
-medications: document.getElementById('medications').value,
-visitDate: this.visitDateInput.value,
-visitType: document.getElementById('visitType').value,
-department: document.getElementById('department').value,
-complaints: document.getElementById('complaints').value,
-anamnesis: document.getElementById('anamnesis').value,
-objectiveStatus: document.getElementById('objectiveStatus').value,
-doctorName: document.getElementById('doctorName').value,
-doctorPosition: document.getElementById('doctorPosition').value,
-operatorName: this.operatorName,
-operatorGroup: this.operatorGroup,
-lastUpdate: new Date().toISOString(),
-inputDuration: this.elapsedTime
+  patientId: this.patientId.textContent,
+  creationDate: this.creationDate.textContent,
+  lastName: document.getElementById('lastName').value,
+  firstName: document.getElementById('firstName').value,
+  middleName: document.getElementById('middleName').value,
+  birthDate: this.birthDateInput.value,
+  age: this.ageInput.value,
+  gender: document.getElementById('gender').value,
+  phone: document.getElementById('phone').value,
+  email: document.getElementById('email').value,
+  address: document.getElementById('address').value,
+  passportSeries: document.getElementById('passportSeries').value,
+  passportNumber: document.getElementById('passportNumber').value,
+  passportIssueDate: document.getElementById('passportIssueDate').value,
+  passportIssuedBy: document.getElementById('passportIssuedBy').value,
+  insuranceNumber: document.getElementById('insuranceNumber').value,
+  policyNumber: document.getElementById('policyNumber').value,
+  bloodType: document.getElementById('bloodType').value,
+  chronicDiseases: this.getChronicDiseases(),
+  allergies: document.getElementById('allergies').value,
+  medications: document.getElementById('medications').value,
+  visitDate: this.visitDateInput.value,
+  visitType: document.getElementById('visitType').value,
+  department: document.getElementById('department').value,
+  complaints: document.getElementById('complaints').value,
+  anamnesis: document.getElementById('anamnesis').value,
+  objectiveStatus: document.getElementById('objectiveStatus').value,
+  doctorName: document.getElementById('doctorName').value,
+  doctorPosition: document.getElementById('doctorPosition').value,
+  operatorName: this.operatorName,
+  operatorGroup: this.operatorGroup,
+  lastUpdate: new Date().toISOString(),
+  inputDuration: this.elapsedTime
 };
+
 // Сохранение в localStorage
 const patients = JSON.parse(localStorage.getItem('patients') || '[]');
 const existingIndex = patients.findIndex(p => p.patientId === patientData.patientId);
 if (existingIndex > -1) {
-patients[existingIndex] = patientData;
+  patients[existingIndex] = patientData;
 } else {
-patients.push(patientData);
+  patients.push(patientData);
 }
 localStorage.setItem('patients', JSON.stringify(patients));
+
 // Обновление времени последнего сохранения
 this.lastUpdate.textContent = this.formatDateTime(new Date());
+
 this.showSuccess('Данные пациента успешно сохранены!');
 console.log('Данные сохранены:', patientData);
 }
-// Новый метод: очистка формы без подтверждения
+
 clearFormWithoutConfirmation() {
-// Сброс всех полей формы ТОЛЬКО в контейнере пациента
+// Сброс всех полей формы
 this.patientContainer.querySelectorAll('input:not([type="checkbox"]), textarea, select').forEach(field => {
-if (field.id !== 'patient-id' && field.id !== 'creation-date' && field.id !== 'age') {
-field.value = '';
-}
+  if (field.id !== 'patient-id' && field.id !== 'creation-date' && field.id !== 'age') {
+    field.value = '';
+  }
 });
-// Сброс чекбоксов ТОЛЬКО в контейнере пациента
+
+// Сброс чекбоксов
 this.patientContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-cb.checked = false;
+  cb.checked = false;
 });
-// Сброс стилей валидации ТОЛЬКО в контейнере пациента
+
+// Сброс стилей валидации
 this.patientContainer.querySelectorAll('input, textarea, select').forEach(field => {
-field.style.borderColor = '#ddd';
-field.classList.remove('invalid-email');
+  field.style.borderColor = '#ddd';
+  field.classList.remove('invalid-email');
 });
+
 // Скрыть поле "Другое заболевание"
 this.toggleOtherDiseaseInput(false);
+
 // Скрыть ошибки
 this.emailError.style.display = 'none';
 this.errorBox.style.display = 'none';
 this.successBox.style.display = 'none';
+
 // Сбросить телефон
 document.getElementById('phone').value = '+7';
+
 // Сбросить возраст
 this.ageInput.value = '';
+
 // Если таймер активен, перезапустить его
 if (this.isInputActive) {
-this.stopTimer();
-this.startTimer();
+  this.stopTimer();
+  this.startTimer();
 }
 }
+
 resetForm() {
 if (confirm('Вы уверены, что хотите очистить форму? Все несохраненные данные будут потеряны.')) {
-this.clearFormWithoutConfirmation();
+  this.clearFormWithoutConfirmation();
 }
 }
+
 generateWordDocument() {
 // Проверка заполнения обязательных полей
 if (!this.validateForm()) {
-this.showError('Пожалуйста, заполните все обязательные поля перед печатью.');
-return;
+  this.showError('Пожалуйста, заполните все обязательные поля перед печатью.');
+  return;
 }
+
 // Показать индикатор загрузки
 const originalBtnText = this.printBtn.innerHTML;
 this.printBtn.disabled = true;
 this.printBtn.innerHTML = '<span class="loading"></span> Генерация документа...';
+
 // Сбор данных для документа
 const data = {
-lastName: document.getElementById('lastName').value.trim() || '«не указано»',
-firstName: document.getElementById('firstName').value.trim() || '«не указано»',
-middleName: document.getElementById('middleName').value.trim() || '«не указано»',
-birthDate: this.formatDateForDisplay(document.getElementById('birthDate').value) || '«не указано»',
-age: document.getElementById('age').value.trim() || '«не указано»',
-gender: (() => {
-const val = document.getElementById('gender').value;
-return val === 'male' ? 'Мужской' : (val === 'female' ? 'Женский' : '«не указан»');
-})(),
-address: document.getElementById('address').value.trim() || '«не указан»',
-phone: document.getElementById('phone').value.trim() || '«не указан»',
-email: document.getElementById('email').value.trim() || '«не указан»',
-passportSeries: document.getElementById('passportSeries').value.trim() || '«не указано»',
-passportNumber: document.getElementById('passportNumber').value.trim() || '«не указано»',
-passportIssueDate: this.formatDateForDisplay(document.getElementById('passportIssueDate').value) || '«не указана»',
-passportIssuedBy: document.getElementById('passportIssuedBy').value.trim() || '«не указано»',
-insuranceNumber: document.getElementById('insuranceNumber').value.trim() || '«не указан»',
-policyNumber: document.getElementById('policyNumber').value.trim() || '«не указан»',
-bloodType: document.getElementById('bloodType').options[document.getElementById('bloodType').selectedIndex].text || '«не указана»',
-chronic: this.getChronicDiseasesText(),
-allergies: document.getElementById('allergies').value.trim() || '«не указаны»',
-medications: document.getElementById('medications').value.trim() || '«не указаны»',
-visitDate: this.formatDateForDisplay(document.getElementById('visitDate').value) || '«не указана»',
-visitType: document.getElementById('visitType').options[document.getElementById('visitType').selectedIndex].text || '«не указан»',
-department: document.getElementById('department').options[document.getElementById('department').selectedIndex].text || '«не указано»',
-complaints: document.getElementById('complaints').value.trim() || '«не указаны»',
-anamnesis: document.getElementById('anamnesis').value.trim() || '«не указан»',
-objectiveStatus: document.getElementById('objectiveStatus').value.trim() || '«не указан»',
-doctorName: document.getElementById('doctorName').value.trim() || '«не указано»',
-doctorPosition: document.getElementById('doctorPosition').options[document.getElementById('doctorPosition').selectedIndex].text || '«не указана»',
-operatorName: this.operatorName || '«не указано»',
-operatorGroup: this.operatorGroup || '«не указана»',
-patientId: this.patientId.textContent,
-inputDuration: this.formatTime(this.elapsedTime)
+  lastName: document.getElementById('lastName').value.trim() || '«не указано»',
+  firstName: document.getElementById('firstName').value.trim() || '«не указано»',
+  middleName: document.getElementById('middleName').value.trim() || '«не указано»',
+  birthDate: this.formatDateForDisplay(document.getElementById('birthDate').value) || '«не указано»',
+  age: document.getElementById('age').value.trim() || '«не указано»',
+  gender: (() => {
+    const val = document.getElementById('gender').value;
+    return val === 'male' ? 'Мужской' : (val === 'female' ? 'Женский' : '«не указан»');
+  })(),
+  address: document.getElementById('address').value.trim() || '«не указан»',
+  phone: document.getElementById('phone').value.trim() || '«не указан»',
+  email: document.getElementById('email').value.trim() || '«не указан»',
+  passportSeries: document.getElementById('passportSeries').value.trim() || '«не указано»',
+  passportNumber: document.getElementById('passportNumber').value.trim() || '«не указано»',
+  passportIssueDate: this.formatDateForDisplay(document.getElementById('passportIssueDate').value) || '«не указана»',
+  passportIssuedBy: document.getElementById('passportIssuedBy').value.trim() || '«не указано»',
+  insuranceNumber: document.getElementById('insuranceNumber').value.trim() || '«не указан»',
+  policyNumber: document.getElementById('policyNumber').value.trim() || '«не указан»',
+  bloodType: document.getElementById('bloodType').options[document.getElementById('bloodType').selectedIndex].text || '«не указана»',
+  chronic: this.getChronicDiseasesText(),
+  allergies: document.getElementById('allergies').value.trim() || '«не указаны»',
+  medications: document.getElementById('medications').value.trim() || '«не указаны»',
+  visitDate: this.formatDateForDisplay(document.getElementById('visitDate').value) || '«не указана»',
+  visitType: document.getElementById('visitType').options[document.getElementById('visitType').selectedIndex].text || '«не указан»',
+  department: document.getElementById('department').options[document.getElementById('department').selectedIndex].text || '«не указано»',
+  complaints: document.getElementById('complaints').value.trim() || '«не указаны»',
+  anamnesis: document.getElementById('anamnesis').value.trim() || '«не указан»',
+  objectiveStatus: document.getElementById('objectiveStatus').value.trim() || '«не указан»',
+  doctorName: document.getElementById('doctorName').value.trim() || '«не указано»',
+  doctorPosition: document.getElementById('doctorPosition').options[document.getElementById('doctorPosition').selectedIndex].text || '«не указана»',
+  operatorName: this.operatorName || '«не указано»',
+  operatorGroup: this.operatorGroup || '«не указана»',
+  patientId: this.patientId.textContent,
+  inputDuration: this.formatTime(this.elapsedTime)
 };
+
 // Генерация документа через библиотеку docx
 try {
-if (this.docxAvailable) {
-this.generateDocxDocument(data);
-} else {
-// Резервный метод: браузерная печать
-this.fallbackPrint(data);
-}
+  if (this.docxAvailable) {
+    this.generateDocxDocument(data);
+  } else {
+    // Резервный метод: браузерная печать
+    this.fallbackPrint(data);
+  }
 } catch (error) {
-console.error('Ошибка генерации документа:', error);
-this.showError('Ошибка при создании документа: ' + error.message);
-this.printBtn.disabled = false;
-this.printBtn.innerHTML = originalBtnText;
+  console.error('Ошибка генерации документа:', error);
+  this.showError('Ошибка при создании документа: ' + error.message);
+  this.printBtn.disabled = false;
+  this.printBtn.innerHTML = originalBtnText;
 }
 }
+
 generateDocxDocument(data) {
 const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, Packer } = docx;
+
 // Создание документа
 const doc = new Document({
-sections: [{
-properties: {},
-children: [
-new Paragraph({
-text: "Карточка пациента",
-heading: HeadingLevel.HEADING_1,
-alignment: AlignmentType.CENTER,
-spacing: { after: 300 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "ФИО: ", bold: true }),
-new TextRun(data.lastName + " " + data.firstName + " " + data.middleName)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Дата рождения: ", bold: true }),
-new TextRun(data.birthDate + "   "),
-new TextRun({ text: "Возраст: ", bold: true }),
-new TextRun(data.age + "   "),
-new TextRun({ text: "Пол: ", bold: true }),
-new TextRun(data.gender)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Адрес проживания: ", bold: true }),
-new TextRun(data.address)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Телефон: ", bold: true }),
-new TextRun(data.phone + "   "),
-new TextRun({ text: "E-mail: ", bold: true }),
-new TextRun(data.email)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Паспортные данные: ", bold: true }),
-new TextRun(data.passportSeries + " " + data.passportNumber + " от " + data.passportIssueDate)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Выдан: ", bold: true }),
-new TextRun(data.passportIssuedBy)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "№ СНИЛС: ", bold: true }),
-new TextRun(data.insuranceNumber + "   "),
-new TextRun({ text: "№ Мед. Полиса: ", bold: true }),
-new TextRun(data.policyNumber + "   "),
-new TextRun({ text: "Группа крови: ", bold: true }),
-new TextRun(data.bloodType)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Хронические заболевания: ", bold: true }),
-new TextRun(data.chronic)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Аллергии: ", bold: true }),
-new TextRun(data.allergies)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Постоянные препараты: ", bold: true }),
-new TextRun(data.medications)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Дата обращения: ", bold: true }),
-new TextRun(data.visitDate + "   "),
-new TextRun({ text: "Тип обращения: ", bold: true }),
-new TextRun(data.visitType + "   "),
-new TextRun({ text: "Отделение: ", bold: true }),
-new TextRun(data.department)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Жалобы пациента: ", bold: true }),
-new TextRun(data.complaints)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Анамнез заболевания: ", bold: true }),
-new TextRun(data.anamnesis)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Объективный статус: ", bold: true }),
-new TextRun(data.objectiveStatus)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "ФИО лечащего врача: ", bold: true }),
-new TextRun(data.doctorName)
-],
-spacing: { after: 100 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Должность: ", bold: true }),
-new TextRun(data.doctorPosition)
-],
-spacing: { after: 300 }
-}),
-new Paragraph({
-text: "___________________ / " + (data.doctorName.split(' ')[0] || '') + " /",
-alignment: AlignmentType.RIGHT,
-spacing: { after: 50 }
-}),
-new Paragraph({
-text: "(подпись)",
-alignment: AlignmentType.RIGHT,
-italics: true,
-spacing: { after: 200 }
-}),
-new Paragraph({
-children: [
-new TextRun({ text: "Студент: ", bold: true }),
-new TextRun(data.operatorName + "   "),
-new TextRun({ text: "Группа: ", bold: true }),
-new TextRun(data.operatorGroup + "   "),
-new TextRun({ text: "Время ввода: ", bold: true }),
-new TextRun(data.inputDuration)
-],
-alignment: AlignmentType.LEFT,
-spacing: { before: 100, after: 50 }
-}),
-]
-}]
+  sections: [{
+    properties: {},
+    children: [
+      new Paragraph({
+        text: "Карточка пациента",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 300 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "ФИО: ", bold: true }),
+          new TextRun(data.lastName + " " + data.firstName + " " + data.middleName)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Дата рождения: ", bold: true }),
+          new TextRun(data.birthDate + "   "),
+          new TextRun({ text: "Возраст: ", bold: true }),
+          new TextRun(data.age + "   "),
+          new TextRun({ text: "Пол: ", bold: true }),
+          new TextRun(data.gender)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Адрес проживания: ", bold: true }),
+          new TextRun(data.address)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Телефон: ", bold: true }),
+          new TextRun(data.phone + "   "),
+          new TextRun({ text: "E-mail: ", bold: true }),
+          new TextRun(data.email)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Паспортные данные: ", bold: true }),
+          new TextRun(data.passportSeries + " " + data.passportNumber + " от " + data.passportIssueDate)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Выдан: ", bold: true }),
+          new TextRun(data.passportIssuedBy)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "№ СНИЛС: ", bold: true }),
+          new TextRun(data.insuranceNumber + "   "),
+          new TextRun({ text: "№ Мед. Полиса: ", bold: true }),
+          new TextRun(data.policyNumber + "   "),
+          new TextRun({ text: "Группа крови: ", bold: true }),
+          new TextRun(data.bloodType)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Хронические заболевания: ", bold: true }),
+          new TextRun(data.chronic)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Аллергии: ", bold: true }),
+          new TextRun(data.allergies)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Постоянные препараты: ", bold: true }),
+          new TextRun(data.medications)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Дата обращения: ", bold: true }),
+          new TextRun(data.visitDate + "   "),
+          new TextRun({ text: "Тип обращения: ", bold: true }),
+          new TextRun(data.visitType + "   "),
+          new TextRun({ text: "Отделение: ", bold: true }),
+          new TextRun(data.department)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Жалобы пациента: ", bold: true }),
+          new TextRun(data.complaints)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Анамнез заболевания: ", bold: true }),
+          new TextRun(data.anamnesis)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Объективный статус: ", bold: true }),
+          new TextRun(data.objectiveStatus)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "ФИО лечащего врача: ", bold: true }),
+          new TextRun(data.doctorName)
+        ],
+        spacing: { after: 100 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Должность: ", bold: true }),
+          new TextRun(data.doctorPosition)
+        ],
+        spacing: { after: 300 }
+      }),
+      new Paragraph({
+        text: "___________________ / " + (data.doctorName.split(' ')[0] || '') + " /",
+        alignment: AlignmentType.RIGHT,
+        spacing: { after: 50 }
+      }),
+      new Paragraph({
+        text: "(подпись)",
+        alignment: AlignmentType.RIGHT,
+        italics: true,
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Студент: ", bold: true }),
+          new TextRun(data.operatorName + "   "),
+          new TextRun({ text: "Группа: ", bold: true }),
+          new TextRun(data.operatorGroup + "   "),
+          new TextRun({ text: "Время ввода: ", bold: true }),
+          new TextRun(data.inputDuration)
+        ],
+        alignment: AlignmentType.LEFT,
+        spacing: { before: 100, after: 50 }
+      }),
+    ]
+  }]
 });
+
 // Сохранение документа
 Packer.toBlob(doc).then(blob => {
-const fileName = `Карточка_пациента_${data.lastName}_${data.firstName}_${new Date().toISOString().split('T')[0]}.docx`;
-saveAs(blob, fileName);
-this.showSuccess(`Документ "${fileName}" успешно создан!`);
-console.log('Документ успешно сгенерирован и скачан');
-// Восстановить кнопку
-this.printBtn.disabled = false;
-this.printBtn.innerHTML = '<span>🖨️</span> Печать карты';
+  const fileName = `Карточка_пациента_${data.lastName}_${data.firstName}_${new Date().toISOString().split('T')[0]}.docx`;
+  saveAs(blob, fileName);
+  this.showSuccess(`Документ "${fileName}" успешно создан!`);
+  console.log('Документ успешно сгенерирован и скачан');
+  
+  // Восстановить кнопку
+  this.printBtn.disabled = false;
+  this.printBtn.innerHTML = '<span>🖨️</span> Печать карты';
 }).catch(error => {
-console.error('Ошибка при создании blob:', error);
-this.showError('Ошибка при создании документа. Используется резервный метод печати.');
-// Резервный метод
-this.fallbackPrint(data);
-// Восстановить кнопку
-this.printBtn.disabled = false;
-this.printBtn.innerHTML = originalBtnText;
+  console.error('Ошибка при создании blob:', error);
+  this.showError('Ошибка при создании документа. Используется резервный метод печати.');
+  
+  // Резервный метод
+  this.fallbackPrint(data);
+  
+  // Восстановить кнопку
+  this.printBtn.disabled = false;
+  this.printBtn.innerHTML = originalBtnText;
 });
 }
+
 fallbackPrint(data) {
 // Создание скрытого окна для печати
 const printWindow = window.open('', '_blank', 'width=800,height=600');
 printWindow.document.write(`
-<!DOCTYPE html>
-<html>
-<head>
-<title>Карточка пациента для печати</title>
-<style>
-body { font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5; padding: 40px; }
-h1 { text-align: center; margin-bottom: 30px; font-size: 18pt }
-p { margin: 10px 0; font-size: 14pt}
-.bold { font-weight: bold; }
-.signature { margin-top: 60px; text-align: right; }
-.footer { margin-top: 40px; text-align: center; font-size: 12pt; }
-</style>
-</head>
-<body onload="window.print(); setTimeout(window.close, 1000);">
-<h1>Карточка пациента</h1>
-<p><span class="bold">ФИО:</span> ${data.lastName} ${data.firstName} ${data.middleName}</p>
-<p><span class="bold">Дата рождения:</span> ${data.birthDate} &nbsp;&nbsp;&nbsp;
-<span class="bold">Возраст:</span> ${data.age} &nbsp;&nbsp;&nbsp;
-<span class="bold">Пол:</span> ${data.gender}</p>
-<p><span class="bold">Адрес проживания:</span> ${data.address}</p>
-<p><span class="bold">Телефон:</span> ${data.phone} &nbsp;&nbsp;&nbsp;
-<span class="bold">E-mail:</span> ${data.email}</p>
-<p><span class="bold">Паспортные данные:</span> ${data.passportSeries} ${data.passportNumber} от ${data.passportIssueDate}</p>
-<p><span class="bold">Выдан:</span> ${data.passportIssuedBy}</p>
-<p><span class="bold">№ СНИЛС:</span> ${data.insuranceNumber} &nbsp;&nbsp;&nbsp;
-<span class="bold">№ Мед. Полиса:</span> ${data.policyNumber} &nbsp;&nbsp;&nbsp;
-<span class="bold">Группа крови:</span> ${data.bloodType}</p>
-<p><span class="bold">Хронические заболевания:</span> ${data.chronic}</p>
-<p><span class="bold">Аллергии:</span> ${data.allergies}</p>
-<p><span class="bold">Постоянные препараты:</span> ${data.medications}</p>
-<p><span class="bold">Дата обращения:</span> ${data.visitDate} &nbsp;&nbsp;&nbsp;
-<span class="bold">Тип обращения:</span> ${data.visitType} &nbsp;&nbsp;&nbsp;
-<span class="bold">Отделение:</span> ${data.department}</p>
-<p><span class="bold">Жалобы пациента:</span> ${data.complaints}</p>
-<p><span class="bold">Анамнез заболевания:</span> ${data.anamnesis}</p>
-<p><span class="bold">Объективный статус:</span> ${data.objectiveStatus}</p>
-<p><span class="bold">ФИО лечащего врача:</span> ${data.doctorName}</p>
-<p><span class="bold">Должность:</span> ${data.doctorPosition}</p>
-<div class="signature">
-___________________ / ${data.doctorName.split(' ')[0] || ''} /
-<div style="font-style: italic;">(подпись)</div>
-</div>
-<div class="footer">
-Студент: ${data.operatorName} &nbsp;&nbsp;&nbsp; Группа: ${data.operatorGroup} &nbsp;&nbsp;&nbsp; Время ввода: ${data.inputDuration}
-</div>
-</body>
-</html>
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Карточка пациента для печати</title>
+    <style>
+      body { font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5; padding: 40px; }
+      h1 { text-align: center; margin-bottom: 30px; font-size: 18pt }
+      p { margin: 10px 0; font-size: 14pt}
+      .bold { font-weight: bold; }
+      .signature { margin-top: 60px; text-align: right; }
+      .footer { margin-top: 40px; text-align: center; font-size: 12pt; }
+    </style>
+  </head>
+  <body onload="window.print(); setTimeout(window.close, 1000);">
+    <h1>Карточка пациента</h1>
+    <p><span class="bold">ФИО:</span> ${data.lastName} ${data.firstName} ${data.middleName}</p>
+    <p><span class="bold">Дата рождения:</span> ${data.birthDate} &nbsp;&nbsp;&nbsp;
+    <span class="bold">Возраст:</span> ${data.age} &nbsp;&nbsp;&nbsp;
+    <span class="bold">Пол:</span> ${data.gender}</p>
+    <p><span class="bold">Адрес проживания:</span> ${data.address}</p>
+    <p><span class="bold">Телефон:</span> ${data.phone} &nbsp;&nbsp;&nbsp;
+    <span class="bold">E-mail:</span> ${data.email}</p>
+    <p><span class="bold">Паспортные данные:</span> ${data.passportSeries} ${data.passportNumber} от ${data.passportIssueDate}</p>
+    <p><span class="bold">Выдан:</span> ${data.passportIssuedBy}</p>
+    <p><span class="bold">№ СНИЛС:</span> ${data.insuranceNumber} &nbsp;&nbsp;&nbsp;
+    <span class="bold">№ Мед. Полиса:</span> ${data.policyNumber} &nbsp;&nbsp;&nbsp;
+    <span class="bold">Группа крови:</span> ${data.bloodType}</p>
+    <p><span class="bold">Хронические заболевания:</span> ${data.chronic}</p>
+    <p><span class="bold">Аллергии:</span> ${data.allergies}</p>
+    <p><span class="bold">Постоянные препараты:</span> ${data.medications}</p>
+    <p><span class="bold">Дата обращения:</span> ${data.visitDate} &nbsp;&nbsp;&nbsp;
+    <span class="bold">Тип обращения:</span> ${data.visitType} &nbsp;&nbsp;&nbsp;
+    <span class="bold">Отделение:</span> ${data.department}</p>
+    <p><span class="bold">Жалобы пациента:</span> ${data.complaints}</p>
+    <p><span class="bold">Анамнез заболевания:</span> ${data.anamnesis}</p>
+    <p><span class="bold">Объективный статус:</span> ${data.objectiveStatus}</p>
+    <p><span class="bold">ФИО лечащего врача:</span> ${data.doctorName}</p>
+    <p><span class="bold">Должность:</span> ${data.doctorPosition}</p>
+    <div class="signature">
+      ___________________ / ${data.doctorName.split(' ')[0] || ''} /
+      <div style="font-style: italic;">(подпись)</div>
+    </div>
+    <div class="footer">
+      Студент: ${data.operatorName} &nbsp;&nbsp;&nbsp; Группа: ${data.operatorGroup} &nbsp;&nbsp;&nbsp; Время ввода: ${data.inputDuration}
+    </div>
+  </body>
+  </html>
 `);
+
 // Восстановить кнопку
 this.printBtn.disabled = false;
 this.printBtn.innerHTML = '<span>🖨️</span> Печать карты';
 this.showSuccess('Открыто окно печати браузера. Выберите "Сохранить как PDF" или "Печать".');
 }
+
 createNewPatient() {
 if (confirm('Создать новую карту пациента? Текущие несохраненные данные будут потеряны.')) {
-// Если ввод активен, завершить его
-if (this.isInputActive) {
-this.endInput();
+  // Если ввод активен, завершить его
+  if (this.isInputActive) {
+    this.endInput();
+  }
+
+  // Генерация нового номера пациента
+  const today = new Date();
+  const randomNum = Math.floor(1000 + Math.random() * 9000);
+  this.patientId.textContent = `PAT-${today.getFullYear()}-${randomNum}`;
+  this.creationDate.textContent = this.formatDate(today);
+
+  // Очистка формы
+  this.clearFormWithoutConfirmation();
+
+  // Установка текущей даты
+  this.visitDateInput.value = today.toISOString().split('T')[0];
+  this.lastUpdate.textContent = this.formatDateTime(today);
+
+  // Скрыть таймер
+  this.timerContainer.classList.add('hidden');
+  
+  // Скрыть результаты сравнения
+  if (this.comparisonResultsDiv) {
+    this.comparisonResultsDiv.style.display = 'none';
+  }
 }
-// Генерация нового номера пациента
-const today = new Date();
-const randomNum = Math.floor(1000 + Math.random() * 9000);
-this.patientId.textContent = `PAT-${today.getFullYear()}-${randomNum}`;
-this.creationDate.textContent = this.formatDate(today);
-// Очистка формы
-this.clearFormWithoutConfirmation();
-// Установка текущей даты
-this.visitDateInput.value = today.toISOString().split('T')[0];
-this.lastUpdate.textContent = this.formatDateTime(today);
-// Скрыть таймер
-this.timerContainer.classList.add('hidden');
 }
-}
+
 showError(message) {
 this.errorBox.textContent = message;
 this.errorBox.style.display = 'block';
 this.successBox.style.display = 'none';
 setTimeout(() => {
-this.errorBox.style.display = 'none';
+  this.errorBox.style.display = 'none';
 }, 5000);
 }
+
 showSuccess(message) {
 this.successBox.textContent = message;
 this.successBox.style.display = 'block';
 this.errorBox.style.display = 'none';
 setTimeout(() => {
-this.successBox.style.display = 'none';
+  this.successBox.style.display = 'none';
 }, 5000);
 }
-// Новый метод: смена оператора с скрытием таймера
+
 changeOperator() {
 // Если ввод активен, завершить его
 if (this.isInputActive) {
-this.endInput();
+  this.endInput();
 }
+
 // Скрываем таймер
 this.timerContainer.classList.add('hidden');
+
 // Скрываем форму пациента
 this.patientContainer.classList.add('hidden');
+
 // Показываем форму оператора
 this.operatorContainer.classList.remove('hidden');
+
 // Очищаем поля оператора
 this.operatorNameInput.value = '';
 this.operatorGroupInput.value = '';
+
 // Сбрасываем данные оператора в классе
 this.operatorName = '';
 this.operatorGroup = '';
+
 // Убираем данные оператора из localStorage
 localStorage.removeItem('operatorName');
 localStorage.removeItem('operatorGroup');
+
 // Сбрасываем отображаемые данные
 this.operatorNameDisplay.textContent = '-';
 this.operatorGroupDisplay.textContent = '-';
+
+// Блокируем и сбрасываем выбор шаблонов
+if (this.templateSelect) {
+  this.templateSelect.disabled = true;
+  this.templateSelect.value = '';
+  this.compareTemplateBtn.disabled = true;
+  this.templateDescription.style.display = 'none';
+  this.comparisonResultsDiv.style.display = 'none';
+}
+
 this.showSuccess('Форма оператора готова для ввода новых данных');
 }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
 window.patientCard = new PatientCard();
+
 // Дополнительная проверка библиотеки после загрузки страницы
 setTimeout(() => {
 if (typeof docx === 'undefined') {
-console.warn('Библиотека docx не загружена. Будет использован резервный метод печати.');
+  console.warn('Библиотека docx не загружена. Будет использован резервный метод печати.');
 }
 }, 1000);
 });
