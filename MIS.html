@@ -1594,30 +1594,67 @@ class TemplateManager {
     return this.templates.find(t => t.id === id);
   }
 
-  // Посимвольное сравнение строк
-  compareStringsByChar(str1, str2) {
-    const s1 = String(str1 || '');
-    const s2 = String(str2 || '');
+// Заменяем метод compareStringsByChar
+compareStringsByChar(str1, str2) {
+    const s1 = String(str1 || '').trim();
+    const s2 = String(str2 || '').trim();
     
-    let errors = 0;
-    const maxLength = Math.max(s1.length, s2.length);
-    
-    // Сравниваем посимвольно
-    for (let i = 0; i < maxLength; i++) {
-      const char1 = s1[i] || '';
-      const char2 = s2[i] || '';
-      
-      if (char1 !== char2) {
-        errors++;
-      }
+    // Если строки идентичны
+    if (s1 === s2) {
+        return {
+            errors: 0,
+            totalChars: Math.max(s1.length, s2.length),
+            accuracy: 100,
+            method: 'exact_match'
+        };
     }
     
+    // Расстояние Левенштейна (минимальное количество операций)
+    const distance = this.levenshteinDistance(s1, s2);
+    const maxLength = Math.max(s1.length, s2.length);
+    
     return {
-      errors: errors,
-      totalChars: maxLength,
-      accuracy: maxLength > 0 ? ((maxLength - errors) / maxLength * 100) : 100
+        errors: distance,
+        totalChars: maxLength,
+        accuracy: maxLength > 0 ? ((maxLength - distance) / maxLength * 100) : 100,
+        method: 'levenshtein',
+        insertions: 0, // можно добавить детализацию
+        deletions: 0,
+        substitutions: 0
     };
-  }
+}
+
+// Алгоритм расстояния Левенштейна
+levenshteinDistance(s1, s2) {
+    const len1 = s1.length;
+    const len2 = s2.length;
+    
+    // Создаём матрицу
+    const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(0));
+    
+    // Инициализация первой строки и столбца
+    for (let i = 0; i <= len1; i++) {
+        matrix[0][i] = i;
+    }
+    for (let j = 0; j <= len2; j++) {
+        matrix[j][0] = j;
+    }
+    
+    // Заполнение матрицы
+    for (let j = 1; j <= len2; j++) {
+        for (let i = 1; i <= len1; i++) {
+            const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+            
+            matrix[j][i] = Math.min(
+                matrix[j - 1][i] + 1,      // удаление
+                matrix[j][i - 1] + 1,      // вставка
+                matrix[j - 1][i - 1] + cost // замена
+            );
+        }
+    }
+    
+    return matrix[len2][len1];
+}
 
   // Сравнение текущих данных с шаблоном (посимвольно)
   compareWithTemplate(patientData, template) {
