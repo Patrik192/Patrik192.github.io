@@ -906,6 +906,7 @@ ID пациента: <span id="patient-id">PAT-2026-0001</span>
 <option value="neurology">Неврологическое</option>
 <option value="psychiatry">Психиатрическое</option>
 <option value="cardiology">Кардиологическое</option>
+<option value="pediatrics">Педиатрическое</option>
 </select>
 </div>
 </div>
@@ -1877,6 +1878,7 @@ class TemplateManager {
       if (value === 'neurology') return 'Неврологическое';
       if (value === 'psychiatry') return 'Психиатрическое';
       if (value === 'cardiology') return 'Кардиологическое';
+      if (value === 'pediatrics') return 'Педиатрическое';
     }
 
     if (field === 'bloodType') {
