@@ -74,6 +74,7 @@
             gap: 15px;
             flex-wrap: wrap;
             margin-bottom: 15px;
+            align-items: flex-end;
         }
         .form-group {
             flex: 1;
@@ -111,6 +112,17 @@
         .required::after {
             content: " *";
             color: #dc3545;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+            cursor: pointer;
         }
         .operator-info {
             background: #f8f9fa;
@@ -291,11 +303,20 @@
         <h2 class="section-title">👶 Общие сведения</h2>
         <div class="form-row">
             <div class="form-group"><label for="childName" class="required">Ребенок Ф.И.О.</label><input type="text" id="childName" placeholder="Иванов Иван Иванович"></div>
-            <div class="form-group"><label for="ageMonths">Возраст (до 1 мес – в днях)</label><input type="text" id="ageMonths" placeholder="3,5 или 25 дней"></div>
+            <div class="form-group" style="flex: 1;">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="ageInDaysCheckbox">
+                    <label for="ageInDaysCheckbox">Возраст менее 1 месяца (в днях)</label>
+                </div>
+            </div>
         </div>
         <div class="form-row">
-            <div class="form-group"><label for="oms">ОМС (номер полиса)</label><input type="text" id="oms" placeholder="1234567890123456"></div>
-            <div class="form-group"></div>
+		    
+            <div class="form-group" style="flex: 1;">
+                <label for="ageMonths">Возраст</label>
+                <input type="text" id="ageMonths" placeholder="например, 3,5 мес">
+            </div>
+			<div class="form-group"><label for="oms">ОМС (номер полиса)</label><input type="text" id="oms" placeholder="1234567890123456"></div>
         </div>
         <div class="form-group"><label for="complaints">Жалобы (со слов родителей)</label><textarea id="complaints" rows="2"></textarea></div>
         <div class="form-row">
@@ -358,14 +379,15 @@
                 </select>
             </div>
             <div class="form-group"><label for="umbilicus">Пупочная ранка</label>
-			    <select id="umbilicus">
+                <select id="umbilicus">
                     <option value="">-- Выберите --</option>
-                    <option>Сухая, кожа вокруг пупочного кольца беледно-розовой окраски, отделяемое отсутствует</option>
-                    <option>Корочка, кожа вокруг пупочного кольца беледно-розовой окраски, отделяемое отсутствует</option>
+                    <option>Сухая, кожа вокруг пупочного кольца бледно-розовой окраски, отделяемое отсутствует</option>
+                    <option>Корочка, кожа вокруг пупочного кольца бледно-розовой окраски, отделяемое отсутствует</option>
                     <option>Пупочная ранка сухая, чистая покрыта эпителием</option>
                     <option>Пупочная ранка влажная отделяемое серозное</option>
-					<option>Пупочная ранка влажная отделяемое гнойное</option>
+                    <option>Пупочная ранка влажная отделяемое гнойное</option>
                 </select>
+            </div>
         </div>
         <div class="form-row">
             <div class="form-group"><label for="mucous">Слизистые</label>
@@ -432,19 +454,19 @@
     </div>
 
     <div class="form-section">
-    <h2 class="section-title">📊 Нервно-психическое развитие (НПР)</h2>
-    <div class="form-row">
-        <div class="form-group"><label for="az">АЗ</label><select id="az"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
-        <div class="form-group"><label for="as">АС</label><select id="as"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
-        <div class="form-group"><label for="e">Э</label><select id="e"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
-        <div class="form-group"><label for="do">ДО</label><select id="do"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
-        <div class="form-group"><label for="dr">ДР</label><select id="dr"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
-        <div class="form-group"><label for="dp">ДП</label><select id="dp"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
-        <div class="form-group"><label for="rr">РР</label><select id="rr"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
-        <div class="form-group"><label for="pr">ПР</label><select id="pr"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
-        <div class="form-group"><label for="n">Н</label><select id="n"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+        <h2 class="section-title">📊 Нервно-психическое развитие (НПР)</h2>
+        <div class="form-row">
+            <div class="form-group"><label for="az">АЗ</label><select id="az"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+            <div class="form-group"><label for="as">АС</label><select id="as"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+            <div class="form-group"><label for="e">Э</label><select id="e"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+            <div class="form-group"><label for="do">ДО</label><select id="do"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+            <div class="form-group"><label for="dr">ДР</label><select id="dr"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+            <div class="form-group"><label for="dp">ДП</label><select id="dp"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+            <div class="form-group"><label for="rr">РР</label><select id="rr"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+            <div class="form-group"><label for="pr">ПР</label><select id="pr"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+            <div class="form-group"><label for="n">Н</label><select id="n"><option value="" selected>-Выберите-</option><option>отстает</option><option>норма</option><option>опережает</option></select></div>
+        </div>
     </div>
-</div>
 
     <div class="form-section">
         <h2 class="section-title">🏡 Санитарно-бытовые условия и уход</h2>
@@ -538,7 +560,11 @@
             this.creationDateSpan = document.getElementById('creation-date');
             this.visitDateInput = document.getElementById('visitDate');
 
-            // Все поля для сохранения
+            // Поле возраста и чекбокс
+            this.ageInput = document.getElementById('ageMonths');
+            this.ageCheckbox = document.getElementById('ageInDaysCheckbox');
+
+            // Все поля для сохранения (чекбокс не входит, сохраняем отдельно)
             this.allFields = [
                 'childName','ageMonths','oms','complaints','temperature','condition','feeding','complementary','topFeed','drinkRegime','appetite',
                 'skin','umbilicus','mucous','stool','urination','behavior','wakefulness','mood','fallAsleep','badHabits','sleep',
@@ -559,6 +585,31 @@
             this.printBtn.addEventListener('click', () => this.printCard());
             this.newPatientBtn.addEventListener('click', () => this.newRecord());
             this.saveWordBtn.addEventListener('click', () => this.generateWordDocument());
+
+            // Обработчик изменения чекбокса
+            this.ageCheckbox.addEventListener('change', () => this.updateAgePlaceholder());
+        }
+
+        // Меняем placeholder поля возраста в зависимости от чекбокса
+        updateAgePlaceholder() {
+            if (this.ageCheckbox.checked) {
+                this.ageInput.placeholder = "например, 25 дней";
+            } else {
+                this.ageInput.placeholder = "например, 3,5 мес";
+            }
+        }
+
+        // Формирование строки возраста для печати
+        getAgeString() {
+            let ageValue = this.ageInput.value.trim();
+            if (!ageValue) return "__________";
+            if (this.ageCheckbox.checked) {
+                // Возраст в днях
+                return `${ageValue} дней`;
+            } else {
+                // Возраст в месяцах
+                return `${ageValue} мес`;
+            }
         }
 
         handleOperatorEnter() {
@@ -600,6 +651,7 @@
             this.visitDateInput.value = today.toISOString().slice(0, 10);
             this.updateLastUpdate();
             this.loadSavedData();
+            this.updateAgePlaceholder(); // установить правильный placeholder
         }
 
         loadSavedData() {
@@ -613,6 +665,14 @@
                     }
                 } catch (e) {}
             }
+            // Загрузка состояния чекбокса
+            const checkboxState = localStorage.getItem('patronageAgeInDays');
+            if (checkboxState !== null) {
+                this.ageCheckbox.checked = checkboxState === 'true';
+            } else {
+                this.ageCheckbox.checked = false;
+            }
+            this.updateAgePlaceholder();
         }
 
         saveData() {
@@ -621,6 +681,8 @@
                 data[id] = document.getElementById(id)?.value || '';
             }
             localStorage.setItem('patronageFormData', JSON.stringify(data));
+            // Сохраняем состояние чекбокса
+            localStorage.setItem('patronageAgeInDays', this.ageCheckbox.checked);
             this.updateLastUpdate();
             this.showSuccess('Данные сохранены!');
         }
@@ -634,15 +696,18 @@
                         else el.value = '';
                     }
                 }
+                this.ageCheckbox.checked = false;
+                this.updateAgePlaceholder();
                 this.visitDateInput.value = new Date().toISOString().slice(0, 10);
                 this.showSuccess('Форма очищена');
             }
         }
 
-        // Браузерная печать (код не меняется, но данные подхватятся автоматически)
+        // Браузерная печать (с корректным отображением возраста)
         printCard() {
             const data = {};
             for (let id of this.allFields) data[id] = document.getElementById(id)?.value || '';
+            const ageString = this.getAgeString();
 
             const printWindow = window.open('', '_blank', 'width=1000,height=800');
             printWindow.document.write(`
@@ -666,24 +731,30 @@
                 <body>
                     <h1>Патронаж медсестры (0–12 месяцев)</h1>
                     <table>
-                        <tr><td style="width:50%"><strong>Ребенок Ф.И.О.</strong><br>${data.childName || '____________________'}</td><td><strong>Возраст</strong><br>${data.ageMonths || '__________'}</td></tr>
-                        <tr><td colspan="2"><strong>ОМС</strong><br>${data.oms || '____________________'}</td></tr>
-                        <tr><td colspan="2"><strong>Жалобы (со слов родителей)</strong><br>${data.complaints || '____________________'}</td></tr>
-                        <tr><td><strong>t° тела</strong><br>${data.temperature || '__________'}</td><td><strong>Состояние</strong><br>${data.condition || '__________'}</td></tr>
-                        <tr><td><strong>Кожные покровы</strong><br>${data.skin || '__________'}</td><td><strong>Вскармливание</strong><br>${data.feeding || '__________'}</td></tr>
-                        <tr><td><strong>Пупочная ранка</strong><br>${data.umbilicus || '__________'}</td><td><strong>Прикорм</strong><br>${data.complementary || '__________'}</td></tr>
-                        <tr><td><strong>Слизистые</strong><br>${data.mucous || '__________'}</td><td><strong>Докорм</strong><br>${data.topFeed || '__________'}</td></tr>
-                        <tr><td><strong>Стул</strong><br>${data.stool || '__________'}</td><td><strong>Питьевой режим</strong><br>${data.drinkRegime || '__________'}</td></tr>
-                        <tr><td><strong>Мочеиспускание</strong><br>${data.urination || '__________'}</td><td><strong>Аппетит</strong><br>${data.appetite || '__________'}</td></tr>
-                        <tr><td><strong>Оценка поведения</strong><br>${data.behavior || '__________'}</td><td><strong>Характер бодрствования</strong><br>${data.wakefulness || '__________'}</td></tr>
-                        <tr><td><strong>Настроение</strong><br>${data.mood || '__________'}</td><td><strong>Засыпает</strong><br>${data.fallAsleep || '__________'}</td></tr>
-                        <tr><td><strong>Отрицательные привычки</strong><br>${data.badHabits || '__________'}</td><td><strong>Сон</strong><br>${data.sleep || '__________'}</td></tr>
-                        <tr><td><strong>Санитарное состояние жилья</strong><br>${data.sanitary || '__________'}</td><td><strong>t° помещения</strong><br>${data.roomTemp || '__________'}</td></tr>
-                        <tr><td colspan="2"><strong>Домашние животные</strong><br>${data.pets || '__________'}</td></tr>
-                    </table>
+                        <tr><td style="width:50%"><strong>Ребенок Ф.И.О.</strong><br>${data.childName || '____________________'}</td>
+                             <td><strong>Возраст</strong><br>${ageString}</td>
+                         </tr>
+                         <tr><td colspan="2"><strong>ОМС</strong><br>${data.oms || '____________________'}</td></tr>
+                         <tr><td colspan="2"><strong>Жалобы (со слов родителей)</strong><br>${data.complaints || '____________________'}</td></tr>
+                         <tr><td><strong>t° тела</strong><br>${data.temperature || '__________'}</td><td><strong>Состояние</strong><br>${data.condition || '__________'}</td></tr>
+                         <tr><td><strong>Кожные покровы</strong><br>${data.skin || '__________'}</td><td><strong>Вскармливание</strong><br>${data.feeding || '__________'}</td></tr>
+                         <tr><td><strong>Пупочная ранка</strong><br>${data.umbilicus || '__________'}</td><td><strong>Прикорм</strong><br>${data.complementary || '__________'}</td></tr>
+                         <tr><td><strong>Слизистые</strong><br>${data.mucous || '__________'}</td><td><strong>Докорм</strong><br>${data.topFeed || '__________'}</td></tr>
+                         <tr><td><strong>Стул</strong><br>${data.stool || '__________'}</td><td><strong>Питьевой режим</strong><br>${data.drinkRegime || '__________'}</td></tr>
+                         <tr><td><strong>Мочеиспускание</strong><br>${data.urination || '__________'}</td><td><strong>Аппетит</strong><br>${data.appetite || '__________'}</td></tr>
+                         <tr><td><strong>Оценка поведения</strong><br>${data.behavior || '__________'}</td><td><strong>Характер бодрствования</strong><br>${data.wakefulness || '__________'}</td></tr>
+                         <tr><td><strong>Настроение</strong><br>${data.mood || '__________'}</td><td><strong>Засыпает</strong><br>${data.fallAsleep || '__________'}</td></tr>
+                         <tr><td><strong>Отрицательные привычки</strong><br>${data.badHabits || '__________'}</td><td><strong>Сон</strong><br>${data.sleep || '__________'}</td></tr>
+                         <tr><td><strong>Санитарное состояние жилья</strong><br>${data.sanitary || '__________'}</td><td><strong>t° помещения</strong><br>${data.roomTemp || '__________'}</td></tr>
+                         <tr><td colspan="2"><strong>Домашние животные</strong><br>${data.pets || '__________'}</td></tr>
+                     </table>
+
                     <h3>Оценка нервно-психического развития</h3>
-                    <table class="npd-table"><tr><th>АЗ</th><th>АС</th><th>Э</th><th>ДО</th><th>ДР</th><th>ДП</th><th>РР</th><th>ПР</th><th>Н</th></tr>
-                    <tr><td>${data.az}</td><td>${data.as}</td><td>${data.e}</td><td>${data.do}</td><td>${data.dr}</td><td>${data.dp}</td><td>${data.rr}</td><td>${data.pr}</td><td>${data.n}</td></tr></table>
+                    <table class="npd-table">
+                        <tr><th>АЗ</th><th>АС</th><th>Э</th><th>ДО</th><th>ДР</th><th>ДП</th><th>РР</th><th>ПР</th><th>Н</th></tr>
+                        <tr><td>${data.az}</td><td>${data.as}</td><td>${data.e}</td><td>${data.do}</td><td>${data.dr}</td><td>${data.dp}</td><td>${data.rr}</td><td>${data.pr}</td><td>${data.n}</td></tr>
+                    </table>
+
                     <h3>Уход за ребенком</h3>
                     <table>
                         <tr><td><strong>Соблюдение режима дня</strong><br>${data.dailyRoutine || '__________'}</td><td><strong>Закаливание</strong><br>${data.hardening || '__________'}</td></tr>
@@ -705,10 +776,11 @@
             printWindow.print();
         }
 
-        // Генерация Word (код не меняется, но использует те же поля)
+        // Генерация Word с корректным возрастом
         async generateWordDocument() {
             const data = {};
             for (let id of this.allFields) data[id] = document.getElementById(id)?.value || '';
+            const ageString = this.getAgeString();
 
             if (typeof docx === 'undefined') {
                 this.showError('Библиотека docx не загружена. Попробуйте обновить страницу.');
@@ -726,7 +798,7 @@
             };
 
             const fields = [
-                ['Ребенок Ф.И.О.', data.childName], ['Возраст', data.ageMonths],
+                ['Ребенок Ф.И.О.', data.childName], ['Возраст', ageString],
                 ['ОМС', data.oms, true],
                 ['Жалобы (со слов родителей)', data.complaints, true],
                 ['t° тела', data.temperature], ['Состояние', data.condition],
@@ -809,6 +881,7 @@
             localStorage.removeItem('patronageOperatorName');
             localStorage.removeItem('patronageOperatorPos');
             localStorage.removeItem('patronageFormData');
+            localStorage.removeItem('patronageAgeInDays');
             this.operatorNameInput.value = '';
             this.operatorPositionInput.value = '';
             this.showSuccess('Сотрудник сменён');
