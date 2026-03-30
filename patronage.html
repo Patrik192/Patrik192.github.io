@@ -603,8 +603,14 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group"><label for="bathing">Купание</label><input type="text" id="bathing" placeholder="ежедневно, 36-37°C"></div>
-            <div class="form-group"><label for="laundry">Стирка детского белья</label>
+            <div class="form-group"><label for="bathing">Купание</label>
+                <select id="bathing">
+                    <option value="">-- Выберите --</option>
+                    <option>Ежедневно</option>
+                    <option>Через день</option>
+                </select>
+            </div>
+			<div class="form-group"><label for="laundry">Стирка детского белья</label>
                 <select id="laundry">
                     <option value="">-- Выберите --</option>
                     <option>Отдельно детским порошком</option>
