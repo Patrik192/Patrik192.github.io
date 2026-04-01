@@ -528,7 +528,7 @@
             <label for="pets">Домашние животные</label>
             <select id="pets">
                 <option value="">-- Выберите --</option>
-				<option>Нет</option>
+                <option>Нет</option>
                 <option>Кошка</option>
                 <option>Собака</option>
                 <option>Другое</option>
@@ -758,6 +758,21 @@
             return '__________';
         }
 
+        getConditionString() {
+            const conditionValue = this.conditionSelect.value;
+            if (conditionValue === 'Удовлетворительное') {
+                const conditionDetail = this.condition2Select.value;
+                if (conditionDetail) {
+                    return `Удовлетворительное: ${conditionDetail}`;
+                } else {
+                    return `Удовлетворительное`;
+                }
+            } else if (conditionValue === 'Неудовлетворительное') {
+                return 'Неудовлетворительное';
+            }
+            return '__________';
+        }
+
         handleOperatorEnter() {
             const name = this.operatorNameInput.value.trim();
             const pos = this.operatorPositionInput.value.trim();
@@ -846,11 +861,12 @@
             }
         }
 
-        // Браузерная печать с обновлённой структурой
+        // Браузерная печать с объединённым полем "Состояние"
         printCard() {
             const data = {};
             for (let id of this.allFields) data[id] = document.getElementById(id)?.value || '';
             const petsString = this.getPetsString();
+            const conditionString = this.getConditionString();
             const printWindow = window.open('', '_blank', 'width=1000,height=800');
             printWindow.document.write(`<!DOCTYPE html>
             <html><head><meta charset="UTF-8"><title>Патронаж</title>
@@ -867,81 +883,73 @@
             </style>
             </head><body><h1>Патронаж медсестры (0–12 месяцев)</h1>
             <table>
-                <tr><td style="width:50%"><strong>Ребенок Ф.И.О.</strong><br>${data.childName || '____________________'}</td>
-                <td><strong>Возраст</strong><br>${data.ageMonths || '__________'}</td>
-                <td><strong>ОМС</strong><br>${data.oms || '____________________'}</td>
-                <td><strong>Жалобы (со слов родителей)</strong><br>${data.complaints || '____________________'}</td>
-                </tr>
-                <tr>
+                 <tr>
+                    <td style="width:50%"><strong>Ребенок Ф.И.О.</strong><br>${data.childName || '____________________'}</td>
+                    <td><strong>Возраст</strong><br>${data.ageMonths || '__________'}</td>
+                    <td><strong>ОМС</strong><br>${data.oms || '____________________'}</td>
+                    <td><strong>Жалобы (со слов родителей)</strong><br>${data.complaints || '____________________'}</td>
+                 </tr>
+                 <tr>
                     <td><strong>t° тела</strong><br>${data.temperature || '__________'}</td>
-                    <td><strong>Состояние</strong><br>${data.condition || '__________'}</td>
-                </tr>
-                ${data.condition === 'Удовлетворительное' ? `<tr><td colspan="2"><strong>Состояние удовлетворительное</strong><br>${data.condition_2 || '__________'}</td></tr>` : ''}
-                <tr>
+                    <td colspan="3"><strong>Состояние</strong><br>${conditionString}</td>
+                 </tr>
+                 <tr>
                     <td><strong>Кожные покровы</strong><br>${data.skin || '__________'}</td>
                     <td><strong>Вскармливание</strong><br>${data.feeding || '__________'}</td>
-                </tr>
-                <tr>
                     <td><strong>Пупочная ранка</strong><br>${data.umbilicus || '__________'}</td>
                     <td><strong>Прикорм</strong><br>${data.complementary || '__________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td><strong>Слизистые</strong><br>${data.mucous || '__________'}</td>
                     <td><strong>Докорм (вид смеси)</strong><br>${data.topFeed || '__________'}</td>
-                </tr>
-                <tr>
                     <td><strong>Стул</strong><br>${data.stool || '__________'}</td>
                     <td><strong>Питьевой режим</strong><br>${data.drinkRegime || '__________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td><strong>Мочеиспускание</strong><br>${data.urination || '__________'}</td>
                     <td><strong>Аппетит</strong><br>${data.appetite || '__________'}</td>
-                </tr>
-                <tr>
                     <td><strong>Оценка поведения</strong><br>${data.behavior || '__________'}</td>
                     <td><strong>Характер бодрствования</strong><br>${data.wakefulness || '__________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td><strong>Настроение</strong><br>${data.mood || '__________'}</td>
                     <td><strong>Засыпает</strong><br>${data.fallAsleep || '__________'}</td>
-                </tr>
-                <tr>
                     <td><strong>Отрицательные привычки</strong><br>${data.badHabits || '__________'}</td>
                     <td><strong>Сон</strong><br>${data.sleep || '__________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td><strong>Санитарное состояние жилья</strong><br>${data.sanitary || '__________'}</td>
                     <td><strong>t° помещения</strong><br>${data.roomTemp || '__________'}</td>
-                </tr>
-                <tr><td colspan="2"><strong>Домашние животные</strong><br>${petsString}</td></tr>
-                <tr>
+                    <td colspan="2"><strong>Домашние животные</strong><br>${petsString}</td>
+                 </tr>
+                 <tr>
                     <td colspan="2"><strong>Соблюдение режима дня</strong><br>${data.dailyRoutine || '__________'}</td>
                     <td colspan="2"><strong>Закаливание</strong><br>${data.hardening || '__________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td colspan="2"><strong>Пеленание / одежда</strong><br>${data.swaddling || '__________'}</td>
                     <td colspan="2"><strong>Массаж / гимнастика</strong><br>${data.massage || '__________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td colspan="2"><strong>Купание</strong><br>${data.bathing || '__________'}</td>
                     <td colspan="2"><strong>Стирка детского белья</strong><br>${data.laundry || '__________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td colspan="2"><strong>Прогулки</strong><br>${data.walks || '__________'}</td>
                     <td colspan="2"><strong>Глажение белья</strong><br>${data.ironing || '__________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td colspan="4"><strong>Советы по питанию кормящей матери</strong><br>${data.momAdvice || '____________________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td colspan="4"><strong>Советы по питанию ребенка</strong><br>${data.babyNutrition || '____________________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td colspan="4"><strong>Беседа на тему:</strong><br>${data.talkTheme || '____________________'}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td colspan="4"><strong>Совет на тему:</strong><br>${data.adviceTheme || '____________________'}</td>
-                </tr>
+                 </tr>
             </table>
             <div class="date-time"><strong>Дата патронажа:</strong> ${data.visitDate || '__________'} &nbsp;&nbsp; <strong>Время визита:</strong> ${data.visitTime || '__________'}</div>
             <div class="signature">___________________ / ${data.nurseName || '___________________'} /<br>(подпись)</div>
@@ -950,11 +958,12 @@
             printWindow.print();
         }
 
-        // Генерация Word-документа с обновлённой структурой
+        // Генерация Word-документа с объединённым полем "Состояние"
         async generateWordDocument() {
             const data = {};
             for (let id of this.allFields) data[id] = document.getElementById(id)?.value || '';
             const petsString = this.getPetsString();
+            const conditionString = this.getConditionString();
             if (typeof docx === 'undefined') {
                 this.showError('Библиотека docx не загружена. Попробуйте обновить страницу.');
                 return;
@@ -968,12 +977,11 @@
                 if (widthPercent !== null) cell.width = { size: widthPercent, type: WidthType.PERCENTAGE };
                 return cell;
             };
-            // Основная таблица (двухколоночная)
+            // Основная таблица (двухколоночная) – теперь условие объединено
             const mainFields = [
                 ['Ребенок Ф.И.О.', data.childName], ['Возраст', data.ageMonths],
                 ['ОМС', data.oms], ['Жалобы (со слов родителей)', data.complaints],
-                ['t° тела', data.temperature], ['Состояние', data.condition],
-                ...(data.condition === 'Удовлетворительное' ? [['Состояние удовлетворительное', data.condition_2]] : []),
+                ['t° тела', data.temperature], ['Состояние', conditionString],
                 ['Кожные покровы', data.skin], ['Вскармливание', data.feeding],
                 ['Пупочная ранка', data.umbilicus], ['Прикорм', data.complementary],
                 ['Слизистые', data.mucous], ['Докорм (вид смеси)', data.topFeed],
@@ -996,7 +1004,6 @@
                     rows.push(new TableRow({ children: [leftCell, createCell('', false)] }));
                 }
             }
-            
 
             // Таблица НПР
             const npdHeaders = ['АЗ', 'АС', 'Э', 'ДО', 'ДР', 'ДП', 'РР', 'ПР', 'Н'];
@@ -1012,7 +1019,6 @@
                         new Paragraph({ text: "Оценка нервно-психического развития", heading: HeadingLevel.HEADING_3, alignment: AlignmentType.CENTER, spacing: { before: 200, after: 100 } }),
                         new Table({ rows: [npdHeaderRow, npdDataRow], width: { size: 100, type: WidthType.PERCENTAGE } }),
                         new Paragraph({ text: "Уход за ребенком", heading: HeadingLevel.HEADING_3, alignment: AlignmentType.CENTER, spacing: { before: 200, after: 100 } }),
-                        // Повторяем таблицу ухода для удобства (можно оставить, но выше уже добавили строки в основную таблицу)
                         new Table({
                             rows: [
                                 new TableRow({ children: [createCell("Соблюдение режима дня: " + (data.dailyRoutine || ''), false), createCell("Закаливание: " + (data.hardening || ''), false)] }),
@@ -1021,9 +1027,9 @@
                                 new TableRow({ children: [createCell("Прогулки: " + (data.walks || ''), false), createCell("Глажение белья: " + (data.ironing || ''), false)] })
                             ],
                             width: { size: 100, type: WidthType.PERCENTAGE }
-						}),
-						new Paragraph({ text: "Советы", heading: HeadingLevel.HEADING_3, alignment: AlignmentType.CENTER, spacing: { before: 200, after: 100 } }),
-						new Table({
+                        }),
+                        new Paragraph({ text: "Советы", heading: HeadingLevel.HEADING_3, alignment: AlignmentType.CENTER, spacing: { before: 200, after: 100 } }),
+                        new Table({
                             rows: [
                                 new TableRow({ children: [createCell("Советы по питанию кормящей матери: " + (data.momAdvice || ''), false)] }),
                                 new TableRow({ children: [createCell("Советы по питанию ребенка: " + (data.babyNutrition || ''), false)] }),
@@ -1031,7 +1037,7 @@
                                 new TableRow({ children: [createCell("Совет на тему: " + (data.adviceTheme || ''), false)] })
                             ],
                             width: { size: 100, type: WidthType.PERCENTAGE }
-						}),
+                        }),
                         new Paragraph({ text: `Дата патронажа: ${data.visitDate || '__________'}     Время визита: ${data.visitTime || '__________'}`, alignment: AlignmentType.CENTER, spacing: { before: 200, after: 100 } }),
                         new Paragraph({ text: `___________________ / ${data.nurseName || '___________________'} /`, alignment: AlignmentType.RIGHT, spacing: { before: 400 } })
                     ]
